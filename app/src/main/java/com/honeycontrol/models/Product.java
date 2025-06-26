@@ -2,9 +2,12 @@ package com.honeycontrol.models;
 
 import java.time.LocalDateTime;
 
-public class Companies {
+public class Product {
     private String id;
     private String name;
+    private String description;
+    private Float unit_price;
+    private String unit;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
@@ -22,6 +25,30 @@ public class Companies {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Float getUnit_price() {
+        return unit_price;
+    }
+
+    public void setUnit_price(Float unit_price) {
+        this.unit_price = unit_price;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public LocalDateTime getCreated_at() {

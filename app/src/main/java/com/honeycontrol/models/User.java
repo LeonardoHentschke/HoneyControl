@@ -2,9 +2,11 @@ package com.honeycontrol.models;
 
 import java.time.LocalDateTime;
 
-public class Companies {
+public class User {
     private String id;
     private String name;
+    private String email;
+    private String password_hash;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
@@ -22,6 +24,22 @@ public class Companies {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword_hash() {
+        return password_hash;
+    }
+
+    public void setPassword_hash(String password_hash) {
+        this.password_hash = password_hash;
     }
 
     public LocalDateTime getCreated_at() {
