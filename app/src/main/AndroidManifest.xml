@@ -27,6 +27,11 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        
+        <activity
+            android:name=".SignupWizardActivity"
+            android:exported="false"
+            android:parentActivityName=".LoginActivity" />
 
     </application>
 

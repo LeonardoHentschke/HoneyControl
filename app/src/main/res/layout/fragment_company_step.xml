@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/neutral_900">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Icon -->
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_business_24"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/amber_100"
+            android:padding="20dp"
+            app:tint="@color/amber_400" />
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cadastro da Companhia"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/neutral_50"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Subtitle -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vamos começar criando o perfil da sua empresa"
+            android:textSize="16sp"
+            android:textColor="@color/neutral_200"
+            android:gravity="center"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Company Name Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/companyNameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:hint="Nome da empresa"
+            app:startIconDrawable="@drawable/ic_business_24"
+            app:startIconTint="@color/neutral_500"
+            app:boxStrokeColor="@color/amber_400"
+            app:hintTextColor="@color/amber_500"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/companyNameInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:maxLines="1"
+                android:textSize="16sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Help Text -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Este será o nome da sua empresa no sistema"
+            android:textSize="14sp"
+            android:textColor="@color/neutral_200"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+</ScrollView>
