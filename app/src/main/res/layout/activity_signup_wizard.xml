@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/neutral_900"
+    android:paddingTop="24dp"
     android:fitsSystemWindows="true"
     android:fillViewport="true"
     tools:context=".SignupWizardActivity">

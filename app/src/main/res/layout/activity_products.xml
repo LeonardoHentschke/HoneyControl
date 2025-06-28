@@ -6,7 +6,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/neutral_900"
-    android:padding="24dp"
+    android:paddingTop="48dp"
+    android:paddingBottom="24dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
     tools:context=".ProductsActivity">
 
     <!-- Header -->

@@ -2,10 +2,9 @@ package com.honeycontrol;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 
-public class SalesActivity extends AppCompatActivity {
+public class SalesActivity extends BaseActivity {
     
     private MaterialButton backToDashboardButton;
     

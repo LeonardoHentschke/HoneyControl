@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.google.android.material.button.MaterialButton;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends BaseActivity {
     
     private MaterialButton logoutButton;
     private CardView customersCard, productsCard, costsCard, salesCard;

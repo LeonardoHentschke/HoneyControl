@@ -11,7 +11,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.honeycontrol.models.User;
 import com.honeycontrol.services.ApiService;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
     
     private MaterialButton loginButton;
     private TextInputLayout emailLayout, passwordLayout;

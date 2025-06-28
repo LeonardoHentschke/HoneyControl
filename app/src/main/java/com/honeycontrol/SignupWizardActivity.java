@@ -16,7 +16,7 @@ import com.honeycontrol.requests.UserCreateRequest;
 import com.honeycontrol.services.ApiService;
 import com.honeycontrol.viewmodels.SignupWizardViewModel;
 
-public class SignupWizardActivity extends AppCompatActivity {
+public class SignupWizardActivity extends BaseActivity {
 
     private ViewPager2 viewPager;
     private MaterialButton btnPrevious, btnNext;
