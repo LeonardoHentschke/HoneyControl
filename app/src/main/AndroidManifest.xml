@@ -59,6 +59,11 @@
             android:exported="false"
             android:parentActivityName=".CustomersActivity" />
 
+        <activity
+            android:name=".CostFormActivity"
+            android:exported="false"
+            android:parentActivityName=".CostsActivity" />
+
     </application>
 
 </manifest>

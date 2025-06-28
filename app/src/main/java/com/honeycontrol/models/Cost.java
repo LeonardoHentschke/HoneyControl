@@ -1,16 +1,44 @@
 package com.honeycontrol.models;
 
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
 import java.time.LocalDateTime;
 
 public class Cost {
+    @SerializedName("id")
+    @Expose
     private String id;
+    
+    @SerializedName("name")
+    @Expose
     private String name;
+    
+    @SerializedName("description")
+    @Expose
     private String description;
+    
+    @SerializedName("category")
+    @Expose
     private String category;
+    
+    @SerializedName("amount")
+    @Expose
     private Float amount;
+    
+    @SerializedName("company_id")
+    @Expose
     private String company_id;
+    
+    @SerializedName("user_id")
+    @Expose
     private String user_id;
+    
+    @SerializedName("created_at")
+    @Expose
     private LocalDateTime created_at;
+    
+    @SerializedName("updated_at")
+    @Expose
     private LocalDateTime updated_at;
 
     public String getId() {

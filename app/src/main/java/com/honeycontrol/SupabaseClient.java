@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import com.honeycontrol.requests.CompanyCreateRequest;
 import com.honeycontrol.requests.UserCreateRequest;
 import com.honeycontrol.requests.CustomerCreateRequest;
+import com.honeycontrol.requests.CostCreateRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -269,6 +270,45 @@ public class SupabaseClient {
         public ApiCall<Void> deleteCustomer(String customerId) {
             return callback -> {
                 String endpoint = "customers?id=eq." + customerId;
+                executeRequest(endpoint, "DELETE", null, Void.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<List<Cost>> getCostsByCompany(String companyId) {
+            return callback -> {
+                String endpoint = "costs?company_id=eq." + companyId + "&select=*";
+                Type listType = new TypeToken<List<Cost>>(){}.getType();
+                executeRequest(endpoint, "GET", null, listType, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Cost> getCostById(String costId) {
+            return callback -> {
+                String endpoint = "costs?id=eq." + costId + "&select=*";
+                executeRequest(endpoint, "GET", null, Cost.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Cost> createCost(CostCreateRequest costRequest) {
+            return callback -> executeRequest("costs", "POST", costRequest,
+                    Cost.class, callback);
+        }
+
+        @Override
+        public ApiCall<Cost> updateCost(String costId, CostCreateRequest costRequest) {
+            return callback -> {
+                String endpoint = "costs?id=eq." + costId;
+                executeRequest(endpoint, "PATCH", costRequest, Cost.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Void> deleteCost(String costId) {
+            return callback -> {
+                String endpoint = "costs?id=eq." + costId;
                 executeRequest(endpoint, "DELETE", null, Void.class, callback);
             };
         }

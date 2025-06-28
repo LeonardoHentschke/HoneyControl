@@ -1,7 +1,6 @@
 package com.honeycontrol.utils;
 
 import com.honeycontrol.UserSession;
-import com.honeycontrol.models.User;
 
 public class SessionUtils {
 
@@ -9,8 +8,8 @@ public class SessionUtils {
         return UserSession.getInstance().isUserLoggedIn();
     }
 
-    public static User getCurrentUser() {
-        return UserSession.getInstance().getCurrentUser();
+    public static String getCurrentUserId() {
+        return UserSession.getInstance().getCurrentUser().getId();
     }
 
     public static String getCurrentUserCompanyId() {
