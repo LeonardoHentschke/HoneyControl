@@ -60,9 +60,16 @@ public class SupabaseClient {
 
     public static class LocalDateTimeDeserializer implements JsonDeserializer<LocalDateTime> {
         private static final DateTimeFormatter[] FORMATTERS = {
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"),  // 6 dígitos de microssegundos
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSS"),   // 5 dígitos
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSS"),    // 4 dígitos
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),     // 3 dígitos (milissegundos)
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SS"),      // 2 dígitos
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"),       // 1 dígito
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),         // Sem fração de segundo
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"),       // Formato alternativo com espaço
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"),
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         };
 
@@ -96,17 +103,12 @@ public class SupabaseClient {
     }
 
     public static class SupabaseApiImplementation implements SupabaseApi {
-        
-        // Método auxiliar para executar requisições HTTP
         private <T> void executeRequest(String endpoint, String method, Object body,
                                         Type responseType,
                                      ApiCallback<T> callback) {
             executor.execute(() -> {
                 HttpURLConnection connection = null;
                 try {
-
-                    // Adicionar parâmetros de consulta, se houver
-
                     URL url = new URL(BASE_URL + endpoint);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod(method);
@@ -224,6 +226,14 @@ public class SupabaseClient {
         public ApiCall<User> createUser(UserCreateRequest userRequest) {
             return callback -> executeRequest("users", "POST", userRequest,
                     User.class, callback);
+        }
+
+        @Override
+        public ApiCall<User> getUserByEmail(String email) {
+            return callback -> {
+                String endpoint = "users?email=eq." + email + "&select=*";
+                executeRequest(endpoint, "GET", null, User.class, callback);
+            };
         }
     }
 

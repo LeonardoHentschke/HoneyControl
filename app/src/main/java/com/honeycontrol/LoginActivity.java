@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.honeycontrol.models.User;
+import com.honeycontrol.services.ApiService;
 
 public class LoginActivity extends AppCompatActivity {
     
@@ -59,15 +61,56 @@ public class LoginActivity extends AppCompatActivity {
         if (!validateLoginFields(email, password)) {
             return;
         }
+
+        // Mostrar loading
+        loginButton.setEnabled(false);
+        loginButton.setText("Entrando...");
         
-        // TODO: Implementar lógica de login com Supabase
-        // Por enquanto, simular login bem-sucedido
-        Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show();
-        
-        // Navegar para MainActivity
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
-        finish();
+        // Buscar usuário no banco de dados
+        ApiService.getInstance().getApi().getUserByEmail(email)
+            .enqueue(new ApiCallback<>() {
+                @Override
+                public void onSuccess(User user, int code) {
+                    // Reabilitar botão
+                    loginButton.setEnabled(true);
+                    loginButton.setText("Entrar");
+
+                    if (code >= 200 && code < 300 && user != null) {
+                        // Usuário encontrado, verificar senha
+                        if (user.getPassword_hash() != null && user.getPassword_hash().equals(password)) {
+                            // Login bem-sucedido
+                            Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show();
+
+                            // Navegar para DashboardActivity
+                            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // Senha incorreta
+                            Toast.makeText(LoginActivity.this, "Senha incorreta!", Toast.LENGTH_SHORT).show();
+                            passwordLayout.setError("Senha incorreta");
+                            emailLayout.setError(null);
+                        }
+                    } else {
+                        // Usuário não encontrado
+                        Toast.makeText(LoginActivity.this, "Usuário não encontrado!", Toast.LENGTH_SHORT).show();
+                        emailLayout.setError("Email não encontrado");
+                        passwordLayout.setError(null);
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    // Reabilitar botão
+                    loginButton.setEnabled(true);
+                    loginButton.setText("Entrar");
+
+                    // Erro na requisição
+                    Toast.makeText(LoginActivity.this, "Erro na conexão. Tente novamente.", Toast.LENGTH_SHORT).show();
+                    android.util.Log.e("LoginActivity", "Erro ao buscar usuário: " + e.getMessage());
+                }
+            });
     }
     
     private boolean validateLoginFields(String email, String password) {

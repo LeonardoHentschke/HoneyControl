@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Bem-vindo ao HoneyControl!"
+        android:text="Bem vindo ao Honey Control"
         android:textSize="24sp"
         android:textStyle="bold"
         app:titleTextColor="@color/neutral_50"

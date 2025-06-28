@@ -29,6 +29,11 @@
             android:exported="false"
             android:parentActivityName=".LoginActivity" />
 
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="false"
+            android:parentActivityName=".LoginActivity" />
+
     </application>
 
 </manifest>

@@ -8,4 +8,5 @@ import com.honeycontrol.requests.UserCreateRequest;
 public interface SupabaseApi {
     ApiCall<Companies> createCompanies(CompanyCreateRequest companyRequest);
     ApiCall<User> createUser(UserCreateRequest userRequest);
+    ApiCall<User> getUserByEmail(String email);
 }
