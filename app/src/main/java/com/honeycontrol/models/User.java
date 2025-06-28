@@ -1,22 +1,30 @@
 package com.honeycontrol.models;
 
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
 import java.time.LocalDateTime;
 
 public class User {
     @SerializedName("id")
+    @Expose(serialize = false)
     private String id;
     @SerializedName("name")
+    @Expose
     private String name;
     @SerializedName("email")
+    @Expose
     private String email;
     @SerializedName("password_hash")
+    @Expose
     private String password_hash;
     @SerializedName("created_at")
+    @Expose(serialize = false)
     private LocalDateTime created_at;
     @SerializedName("updated_at")
+    @Expose(serialize = false)
     private LocalDateTime updated_at;
     @SerializedName("company_id")
+    @Expose
     private String companyId;
 
     public String getId() {

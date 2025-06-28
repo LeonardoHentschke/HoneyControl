@@ -8,7 +8,7 @@ public class ApiService {
     private final SupabaseApi supabaseApi;
 
     private ApiService() {
-        supabaseApi = SupabaseClient.getClient().create(SupabaseApi.class);
+        supabaseApi = SupabaseClient.createService(SupabaseApi.class);
     }
 
     public static synchronized ApiService getInstance() {

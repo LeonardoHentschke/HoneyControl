@@ -1,6 +1,11 @@
 package com.honeycontrol.models;
 
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
+
 public class ResetPasswordRequest {
+    @SerializedName("email")
+    @Expose
     private String email;
 
     public ResetPasswordRequest() {

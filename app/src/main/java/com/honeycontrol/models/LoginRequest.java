@@ -1,7 +1,15 @@
 package com.honeycontrol.models;
 
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
+
 public class LoginRequest {
+    @SerializedName("email")
+    @Expose
     private String email;
+    
+    @SerializedName("password")
+    @Expose
     private String password;
 
     public LoginRequest() {

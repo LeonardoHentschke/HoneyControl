@@ -11,16 +11,16 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.honeycontrol.adapters.SignupWizardAdapter;
 import com.honeycontrol.models.Companies;
+import com.honeycontrol.models.CompanyCreateRequest;
 import com.honeycontrol.models.User;
+import com.honeycontrol.models.UserCreateRequest;
 import com.honeycontrol.services.ApiService;
 import com.honeycontrol.viewmodels.SignupWizardViewModel;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.honeycontrol.ApiCall;
+import com.honeycontrol.ApiCallback;
 
 public class SignupWizardActivity extends AppCompatActivity {
-    
+
     private ViewPager2 viewPager;
     private MaterialButton btnPrevious, btnNext;
     private LinearProgressIndicator progressIndicator;
@@ -171,38 +171,48 @@ public class SignupWizardActivity extends AppCompatActivity {
     }
     
     private void createCompany(SignupWizardViewModel.SignupData data) {
-        // Criar objeto Companies
-        Companies company = new Companies();
-        company.setName(data.companyName);
+        // Criar objeto CompanyCreateRequest com apenas o campo name
+        CompanyCreateRequest companyRequest = new CompanyCreateRequest(data.companyName);
 
         // Chamar API para criar companhia
-        ApiService.getInstance().getApi().createCompanies(company)
-            .enqueue(new Callback<>() {
+        ApiService.getInstance().getApi().createCompanies(companyRequest)
+            .enqueue(new ApiCallback<>() {
                 @Override
-                public void onResponse(@NonNull Call<Companies> call, @NonNull Response<Companies> response) {
-                    if (response.isSuccessful() && response.body() != null) {
+                public void onSuccess(Companies createdCompany, int code) {
+                    if (code >= 200 && code < 300 && createdCompany != null) {
                         // Companhia criada com sucesso, agora criar usuário
-                        Companies createdCompany = response.body();
                         android.util.Log.d("SignupWizard", "Empresa criada com ID: " + createdCompany.getId());
+
+                        if (createdCompany.getId() == null) {
+                            android.util.Log.e("SignupWizard", "ID da empresa é null. Response body: " + createdCompany);
+                            showLoading(false);
+
+                            // Verificar se quer tentar novamente
+                            showRetryDialog("Erro ao obter ID da empresa",
+                                    "Ocorreu um erro ao obter o ID da empresa criada. Deseja tentar novamente?",
+                                    () -> createCompany(data));
+                            return;
+                        }
 
                         // Com o ID da companhia, criar usuário
                         createUser(data, createdCompany.getId());
                     } else {
                         // Erro ao criar companhia
-                        android.util.Log.e("SignupWizard", "Erro ao criar empresa: " + response.code());
+                        android.util.Log.e("SignupWizard", "Erro ao criar empresa: " + code);
                         showLoading(false);
 
                         // Verificar se quer tentar novamente
                         showRetryDialog("Erro ao criar empresa",
-                                "Ocorreu um erro ao criar a empresa (código " + response.code() + "). Deseja tentar novamente?",
+                                "Ocorreu um erro ao criar a empresa (código " + code + "). Deseja tentar novamente?",
                                 () -> createCompany(data));
                     }
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<Companies> call, @NonNull Throwable t) {
+                public void onFailure(Exception e) {
                     // Falha na requisição
-                    android.util.Log.e("SignupWizard", "Falha na requisição para criar empresa", t);
+                    android.util.Log.e("SignupWizard", "Falha na requisição para criar empresa", e);
+                    android.util.Log.e("SignupWizard", "Erro detalhado: " + e.getMessage());
                     showLoading(false);
 
                     // Verificar se quer tentar novamente
@@ -214,31 +224,43 @@ public class SignupWizardActivity extends AppCompatActivity {
     }
     
     private void createUser(SignupWizardViewModel.SignupData data, String companyId) {
-        // Criar objeto User
-        User user = new User();
-        user.setName(data.userName);
-        user.setEmail(data.userEmail);
-        user.setPassword_hash(data.userPassword);
-        user.setCompanyId(companyId);
+        // Criar objeto UserCreateRequest
+        UserCreateRequest userRequest = new UserCreateRequest(
+            data.userName,
+            data.userEmail, 
+            data.userPassword,
+            companyId
+        );
+        
+        android.util.Log.d("SignupWizard", "Criando usuário: " + userRequest.getName());
         
         // Chamar API para criar usuário
-        ApiService.getInstance().getApi().createUser(user)
-            .enqueue(new Callback<>() {
+        ApiService.getInstance().getApi().createUser(userRequest)
+            .enqueue(new ApiCallback<>() {
                 @Override
-                public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                public void onSuccess(User createdUser, int code) {
                     showLoading(false);
 
-                    if (response.isSuccessful() && response.body() != null) {
+                    if (code >= 200 && code < 300 && createdUser != null) {
                         // Usuário criado com sucesso
-                        User createdUser = response.body();
                         android.util.Log.d("SignupWizard", "Usuário criado com ID: " + createdUser.getId());
+
+                        if (createdUser.getId() == null) {
+                            android.util.Log.e("SignupWizard", "ID do usuário é null. Response body: " + createdUser);
+
+                            // Verificar se quer tentar novamente
+                            showRetryDialog("Erro ao obter ID do usuário",
+                                    "Ocorreu um erro ao obter o ID do usuário criado. Deseja tentar novamente?",
+                                    () -> createUser(data, companyId));
+                            return;
+                        }
 
                         String message = String.format(
                                 "Conta criada com sucesso!\nEmpresa: %s\nNome: %s\nEmail: %s\nData: %s",
                                 data.companyName,
                                 data.userName,
                                 data.userEmail,
-                                data.createdAt.toString()
+                                data.createdAt != null ? data.createdAt.toString() : "N/A"
                         );
 
                         // Mostrar diálogo de sucesso
@@ -247,7 +269,7 @@ public class SignupWizardActivity extends AppCompatActivity {
                         android.util.Log.d("SignupWizard", message);
                     } else {
                         // Erro ao criar usuário
-                        android.util.Log.e("SignupWizard", "Erro ao criar usuário: " + response.code());
+                        android.util.Log.e("SignupWizard", "Erro ao criar usuário: " + code);
 
                         // Verificar se quer tentar novamente
                         showRetryDialog("Erro ao criar usuário",
@@ -257,10 +279,8 @@ public class SignupWizardActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(@NonNull retrofit2.Call<User> call, @NonNull Throwable t) {
+                public void onFailure(Exception e) {
                     showLoading(false);
-                    // Falha na requisição
-                    android.util.Log.e("SignupWizard", "Falha na requisição para criar usuário", t);
 
                     // Verificar se quer tentar novamente
                     showRetryDialog("Falha na conexão",
