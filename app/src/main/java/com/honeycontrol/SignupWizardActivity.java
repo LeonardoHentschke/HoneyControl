@@ -174,7 +174,7 @@ public class SignupWizardActivity extends AppCompatActivity {
         // Criar objeto Companies
         Companies company = new Companies();
         company.setName(data.companyName);
-        
+
         // Chamar API para criar companhia
         ApiService.getInstance().getApi().createCompanies(company)
             .enqueue(new Callback<>() {
@@ -194,13 +194,13 @@ public class SignupWizardActivity extends AppCompatActivity {
 
                         // Verificar se quer tentar novamente
                         showRetryDialog("Erro ao criar empresa",
-                                "Ocorreu um erro ao criar a empresa. Deseja tentar novamente?",
+                                "Ocorreu um erro ao criar a empresa (código " + response.code() + "). Deseja tentar novamente?",
                                 () -> createCompany(data));
                     }
                 }
 
                 @Override
-                public void onFailure(@NonNull retrofit2.Call<Companies> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<Companies> call, @NonNull Throwable t) {
                     // Falha na requisição
                     android.util.Log.e("SignupWizard", "Falha na requisição para criar empresa", t);
                     showLoading(false);

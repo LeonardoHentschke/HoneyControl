@@ -4,11 +4,11 @@ import android.annotation.SuppressLint;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -34,7 +34,6 @@ public class SupabaseClient {
                     .addInterceptor(chain -> {
                         Request request = chain.request().newBuilder()
                                 .addHeader("apikey", API_KEY)
-                                .addHeader("Authorization", "Bearer " + API_KEY)
                                 .addHeader("Content-Type", "application/json")
                                 .build();
                         return chain.proceed(request);

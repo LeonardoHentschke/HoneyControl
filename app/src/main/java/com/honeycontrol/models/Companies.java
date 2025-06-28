@@ -33,19 +33,29 @@ public class Companies {
         this.name = name;
     }
 
-    public LocalDateTime getCreated_at() {
+    public LocalDateTime getCreatedAt() {
         return created_at;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
+    public void setCreatedAt(LocalDateTime created_at) {
         this.created_at = created_at;
     }
 
-    public LocalDateTime getUpdated_at() {
+    public LocalDateTime getUpdatedAt() {
         return updated_at;
     }
 
-    public void setUpdated_at(LocalDateTime updated_at) {
+    public void setUpdatedAt(LocalDateTime updated_at) {
         this.updated_at = updated_at;
+    }
+
+    @Override
+    public String toString() {
+        return "Companies{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", created_at=" + created_at +
+                ", updated_at=" + updated_at +
+                '}';
     }
 }
