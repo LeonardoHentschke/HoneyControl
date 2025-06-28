@@ -1,4 +1,4 @@
-package com.honeycontrol.models;
+package com.honeycontrol.requests;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.annotations.Expose;

@@ -17,6 +17,8 @@ import com.honeycontrol.models.*;
 
 import java.util.Collections;
 import com.google.gson.reflect.TypeToken;
+import com.honeycontrol.requests.CompanyCreateRequest;
+import com.honeycontrol.requests.UserCreateRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
