@@ -127,7 +127,7 @@ public class SupabaseClient {
                             os.write(input, 0, input.length);
                         }
                     }
-                    
+
                     int responseCode = connection.getResponseCode();
                     
                     if (responseCode >= 200 && responseCode < 300) {
@@ -250,7 +250,7 @@ public class SupabaseClient {
         }
 
         @Override
-        public ApiCall<Customer> updateCustomer(long customerId, CustomerCreateRequest customerRequest) {
+        public ApiCall<Customer> updateCustomer(String customerId, CustomerCreateRequest customerRequest) {
             return callback -> {
                 String endpoint = "customers?id=eq." + customerId;
                 executeRequest(endpoint, "PATCH", customerRequest, Customer.class, callback);
@@ -258,7 +258,7 @@ public class SupabaseClient {
         }
 
         @Override
-        public ApiCall<Void> deleteCustomer(long customerId) {
+        public ApiCall<Void> deleteCustomer(String customerId) {
             return callback -> {
                 String endpoint = "customers?id=eq." + customerId;
                 executeRequest(endpoint, "DELETE", null, Void.class, callback);

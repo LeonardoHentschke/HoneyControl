@@ -14,6 +14,8 @@ import com.honeycontrol.models.User;
 import com.honeycontrol.requests.CustomerCreateRequest;
 import com.honeycontrol.utils.SessionUtils;
 
+import java.util.Objects;
+
 public class CustomerFormActivity extends BaseActivity {
     
     private static final String TAG = "CustomerFormActivity";
@@ -37,7 +39,7 @@ public class CustomerFormActivity extends BaseActivity {
     private SupabaseApi supabaseApi;
     private Customer editingCustomer;
     private boolean isEditMode = false;
-    private long customerId = -1;
+    private String customerId = "";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +48,13 @@ public class CustomerFormActivity extends BaseActivity {
         
         // Verificar se é modo de edição
         isEditMode = getIntent().getBooleanExtra("edit_mode", false);
-        customerId = getIntent().getLongExtra("customer_id", -1);
+        customerId = getIntent().getStringExtra("customer_id");
         
         initViews();
         setupClickListeners();
         loadCurrentUser();
         
-        if (isEditMode && customerId != -1) {
+        if (isEditMode && !Objects.equals(customerId, "")) {
             loadCustomerForEdit();
         }
     }

@@ -138,44 +138,27 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     }
     
     private void loadCustomers() {
-        String companyId = SessionUtils.getCurrentUserCompanyIdAsLong();
-        Log.d(TAG, "Company ID convertido para long: " + companyId);
-        
-        if (Objects.equals(companyId, "")) {
-            Log.e(TAG, "Company ID inválido ou usuário não logado");
-            String rawCompanyId = SessionUtils.getCurrentUserCompanyId();
-            Log.e(TAG, "Company ID bruto: '" + rawCompanyId + "'");
-            showEmptyState();
-            return;
-        }
-        
+        String companyId = SessionUtils.getCurrentUserCompanyId();
         Log.d(TAG, "Fazendo chamada à API para buscar clientes da empresa: " + companyId);
         showLoading(true);
-        
+
         supabaseApi.getCustomersByCompany(companyId).enqueue(new ApiCallback<List<Customer>>() {
             @Override
             public void onSuccess(List<Customer> customerList, int statusCode) {
                 Log.d(TAG, "Resposta da API recebida com status: " + statusCode);
                 showLoading(false);
-                
+
                 if (customerList != null && !customerList.isEmpty()) {
                     Log.d(TAG, "Clientes carregados: " + customerList.size());
                     customers.clear();
                     customers.addAll(customerList);
                     customerAdapter.notifyDataSetChanged();
                     showCustomersList();
-                    
-                    // Log dos nomes dos clientes para debug
+
                     for (Customer customer : customerList) {
                         Log.d(TAG, "Cliente: " + customer.getName() + " (ID: " + customer.getId() + ")");
                     }
                 } else {
-                    Log.d(TAG, "Nenhum cliente encontrado na resposta");
-                    if (customerList == null) {
-                        Log.d(TAG, "A lista de clientes retornada é null");
-                    } else {
-                        Log.d(TAG, "A lista de clientes retornada está vazia");
-                    }
                     showEmptyState();
                 }
             }
@@ -211,9 +194,7 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume() chamado");
-        
-        // Verificar novamente se o usuário está logado
+
         if (!SessionUtils.isUserLoggedIn()) {
             Log.w(TAG, "Usuário não está mais logado, redirecionando");
             Intent intent = new Intent(this, LoginActivity.class);
@@ -222,114 +203,18 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
             finish();
             return;
         }
-        
-        // Recarregar clientes quando voltar de outras telas
+
         Log.d(TAG, "Recarregando clientes no onResume");
         if (currentUser != null) {
             loadCustomers();
         } else {
             Log.d(TAG, "currentUser é null, carregando usuário novamente");
             loadCurrentUser();
-        }    }
-    
-    // Método de debug para testar carregamento de clientes
-    private void testCustomerLoading() {
-        Log.d(TAG, "=== INICIANDO TESTE DE CARREGAMENTO ===");
-        
-        // 1. Verificar sessão
-        Log.d(TAG, "1. Verificando sessão do usuário...");
-        Log.d(TAG, "   isUserLoggedIn(): " + SessionUtils.isUserLoggedIn());
-        
-        User user = SessionUtils.getCurrentUser();
-        if (user != null) {
-            Log.d(TAG, "   Usuário: " + user.getName());
-            Log.d(TAG, "   Email: " + user.getEmail());
-            Log.d(TAG, "   Company ID: " + user.getCompanyId());
-        } else {
-            Log.e(TAG, "   Usuário é NULL!");
         }
-        
-        // 2. Verificar company ID
-        Log.d(TAG, "2. Verificando Company ID...");
-        String companyId = SessionUtils.getCurrentUserCompanyId();
-        Log.d(TAG, "   Company ID (String): '" + companyId + "'");
-
-        String companyIdLong = SessionUtils.getCurrentUserCompanyIdAsLong();
-        Log.d(TAG, "   Company ID (Long): " + companyIdLong);
-        
-        // 3. Verificar API
-        Log.d(TAG, "3. Verificando instância da API...");
-        Log.d(TAG, "   SupabaseApi é null: " + (supabaseApi == null));
-        
-        // 4. Tentar carregar clientes apenas se tudo estiver OK
-        if (companyIdLong != "" && supabaseApi != null) {
-            Log.d(TAG, "4. Tentando carregar clientes...");
-            loadCustomers();
-        } else {
-            Log.e(TAG, "4. ERRO: Condições não atendidas para carregar clientes");
-            if (companyIdLong == "") {
-                Log.e(TAG, "   - Company ID inválido");
-            }
-            if (supabaseApi == null) {
-                Log.e(TAG, "   - API é null");
-            }
-        }
-        
-        Log.d(TAG, "=== FIM DO TESTE DE CARREGAMENTO ===");
-    }
-    
-    // Método de debug para adicionar clientes de teste
-    private void addTestCustomers() {
-        Log.d(TAG, "Adicionando clientes de teste para debug");
-        
-        // Verificar se temos uma sessão válida
-        if (!SessionUtils.isUserLoggedIn()) {
-            Log.e(TAG, "Usuário não está logado para adicionar clientes de teste");
-            Toast.makeText(this, "Erro: usuário não logado", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
-        String companyId = SessionUtils.getCurrentUserCompanyId();
-        if (companyId == null || companyId.isEmpty()) {
-            Log.e(TAG, "Company ID é nulo para adicionar clientes de teste");
-            Toast.makeText(this, "Erro: Company ID não encontrado", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
-        Log.d(TAG, "Criando cliente de teste para company ID: " + companyId);
-        
-        // Criar um cliente de teste
-        CustomerCreateRequest testCustomer = new CustomerCreateRequest(
-            "Cliente Teste Debug",
-            "teste@debug.com",
-            "(11) 99999-9999",
-            "123.456.789-00",
-            "Rua de Teste, 123",
-            "São Paulo",
-            companyId
-        );
-        
-        supabaseApi.createCustomer(testCustomer).enqueue(new ApiCallback<Customer>() {
-            @Override
-            public void onSuccess(Customer customer, int statusCode) {
-                Log.d(TAG, "Cliente de teste criado com sucesso: " + customer.getName());
-                Toast.makeText(CustomersActivity.this, "Cliente de teste criado!", Toast.LENGTH_SHORT).show();
-                // Recarregar a lista
-                loadCustomers();
-            }
-            
-            @Override
-            public void onFailure(Exception e) {
-                Log.e(TAG, "Erro ao criar cliente de teste: " + e.getMessage(), e);
-                Toast.makeText(CustomersActivity.this, "Erro ao criar cliente de teste: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
-    // Implementação da interface CustomerAdapter.OnCustomerClickListener
     @Override
     public void onCustomerClick(Customer customer) {
-        // Mostrar detalhes ou ações do cliente
         Toast.makeText(this, "Cliente: " + customer.getName(), Toast.LENGTH_SHORT).show();
     }
     
@@ -344,8 +229,6 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     
     @Override
     public void onCustomerDelete(Customer customer) {
-        // Implementar confirmação de exclusão
-        // Por enquanto, apenas mostra uma mensagem
         Toast.makeText(this, "Função de excluir em desenvolvimento", Toast.LENGTH_SHORT).show();
     }
 }

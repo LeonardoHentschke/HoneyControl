@@ -21,16 +21,4 @@ public class SessionUtils {
         return UserSession.getInstance().getCurrentUserName();
     }
 
-    public static String getCurrentUserCompanyIdAsLong() {
-        String companyId = getCurrentUserCompanyId();
-        if (companyId != null && !companyId.isEmpty()) {
-            try {
-                return companyId;
-            } catch (NumberFormatException e) {
-                return "";
-            }
-        }
-        return "";
-    }
-
 }
