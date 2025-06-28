@@ -34,6 +34,26 @@
             android:exported="false"
             android:parentActivityName=".LoginActivity" />
 
+        <activity
+            android:name=".CustomersActivity"
+            android:exported="false"
+            android:parentActivityName=".DashboardActivity" />
+
+        <activity
+            android:name=".ProductsActivity"
+            android:exported="false"
+            android:parentActivityName=".DashboardActivity" />
+
+        <activity
+            android:name=".CostsActivity"
+            android:exported="false"
+            android:parentActivityName=".DashboardActivity" />
+
+        <activity
+            android:name=".SalesActivity"
+            android:exported="false"
+            android:parentActivityName=".DashboardActivity" />
+
     </application>
 
 </manifest>

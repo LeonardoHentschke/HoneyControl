@@ -2,14 +2,14 @@ package com.honeycontrol;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import com.google.android.material.button.MaterialButton;
 
 public class DashboardActivity extends AppCompatActivity {
     
-    private TextView welcomeText;
-    private Button logoutButton;
+    private MaterialButton logoutButton;
+    private CardView customersCard, productsCard, costsCard, salesCard;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,8 +21,11 @@ public class DashboardActivity extends AppCompatActivity {
     }
     
     private void initViews() {
-        welcomeText = findViewById(R.id.welcomeText);
         logoutButton = findViewById(R.id.logoutButton);
+        customersCard = findViewById(R.id.customersCard);
+        productsCard = findViewById(R.id.productsCard);
+        costsCard = findViewById(R.id.costsCard);
+        salesCard = findViewById(R.id.salesCard);
     }
     
     private void setupClickListeners() {
@@ -32,6 +35,26 @@ public class DashboardActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+        });
+
+        customersCard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CustomersActivity.class);
+            startActivity(intent);
+        });
+
+        productsCard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ProductsActivity.class);
+            startActivity(intent);
+        });
+
+        costsCard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CostsActivity.class);
+            startActivity(intent);
+        });
+
+        salesCard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SalesActivity.class);
+            startActivity(intent);
         });
     }
 }
