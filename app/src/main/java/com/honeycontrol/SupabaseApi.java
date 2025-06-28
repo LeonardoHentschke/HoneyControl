@@ -13,6 +13,7 @@ public interface SupabaseApi {
     ApiCall<User> createUser(UserCreateRequest userRequest);
     ApiCall<User> getUserByEmail(String email);
     ApiCall<List<Customer>> getCustomersByCompany(String companyId);
+    ApiCall<Customer> getCustomerById(String customerId);
     ApiCall<Customer> createCustomer(CustomerCreateRequest customerRequest);
     ApiCall<Customer> updateCustomer(String customerId, CustomerCreateRequest customerRequest);
     ApiCall<Void> deleteCustomer(String customerId);

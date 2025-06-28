@@ -82,9 +82,9 @@ public class CustomerFormActivity extends BaseActivity {
         
         // Atualizar textos baseado no modo
         if (isEditMode) {
-            saveButton.setText("Atualizar Cliente");
+            saveButton.setText("Atualizar cliente");
         } else {
-            saveButton.setText("Salvar Cliente");
+            saveButton.setText("Salvar cliente");
         }
     }
     
@@ -124,11 +124,57 @@ public class CustomerFormActivity extends BaseActivity {
     }
     
     private void loadCustomerForEdit() {
-        // Por agora, vamos assumir que temos os dados do cliente
-        // Em uma implementação completa, fariamos uma busca por ID
-        // TODO: Implementar busca de cliente por ID
+        if (customerId == null || customerId.isEmpty()) {
+            Log.e(TAG, "Customer ID é nulo ou vazio");
+            Toast.makeText(this, "Erro: ID do cliente não encontrado", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        
+        showLoading(true);
+        
+        supabaseApi.getCustomerById(customerId).enqueue(new ApiCallback<Customer>() {
+            @Override
+            public void onSuccess(Customer customer, int statusCode) {
+                showLoading(false);
+                if (customer != null) {
+                    editingCustomer = customer;
+                    populateFormWithCustomerData(customer);
+                    Log.d(TAG, "Dados do cliente carregados: " + customer.getName());
+                } else {
+                    Log.e(TAG, "Cliente não encontrado");
+                    Toast.makeText(CustomerFormActivity.this, "Cliente não encontrado", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+            
+            @Override
+            public void onFailure(Exception e) {
+                showLoading(false);
+                Log.e(TAG, "Erro ao carregar cliente: " + e.getMessage());
+                Toast.makeText(CustomerFormActivity.this, "Erro ao carregar dados do cliente", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
     }
     
+    private void populateFormWithCustomerData(Customer customer) {
+        nameEditText.setText(customer.getName());
+        emailEditText.setText(customer.getEmail());
+        phoneEditText.setText(customer.getPhone());
+        
+        // Campos opcionais
+        if (customer.getDocument() != null) {
+            documentEditText.setText(customer.getDocument());
+        }
+        if (customer.getAddress() != null) {
+            addressEditText.setText(customer.getAddress());
+        }
+        if (customer.getCity() != null) {
+            cityEditText.setText(customer.getCity());
+        }
+    }
+
     private boolean validateInputs() {
         boolean isValid = true;
         
@@ -187,14 +233,11 @@ public class CustomerFormActivity extends BaseActivity {
         String address = addressEditText.getText().toString().trim();
         String city = cityEditText.getText().toString().trim();
         String companyId = SessionUtils.getCurrentUserCompanyId();
-        
-        // Log para debug
-        Log.d(TAG, "Criando cliente - Nome: " + name + ", Email: " + email + ", Company ID: " + companyId);
-        
+
         CustomerCreateRequest request = new CustomerCreateRequest(
             name, email, phone, document, address, city, companyId
         );
-        
+
         supabaseApi.createCustomer(request).enqueue(new ApiCallback<>() {
             @Override
             public void onSuccess(Customer customer, int statusCode) {
@@ -229,22 +272,24 @@ public class CustomerFormActivity extends BaseActivity {
         String address = addressEditText.getText().toString().trim();
         String city = cityEditText.getText().toString().trim();
         String companyId = SessionUtils.getCurrentUserCompanyId();
-        
-        // Log para debug
-        Log.d(TAG, "Atualizando cliente - Nome: " + name + ", Email: " + email + ", Company ID: " + companyId);
-        
+
+        if (document.isEmpty()) document = null;
+        if (address.isEmpty()) address = null;
+        if (city.isEmpty()) city = null;
+
         CustomerCreateRequest request = new CustomerCreateRequest(
             name, email, phone, document, address, city, companyId
         );
         
-        supabaseApi.updateCustomer(customerId, request).enqueue(new ApiCallback<Customer>() {
+        supabaseApi.updateCustomer(customerId, request).enqueue(new ApiCallback<>() {
             @Override
             public void onSuccess(Customer customer, int statusCode) {
                 showLoading(false);
+                Log.d(TAG, "Cliente atualizado com sucesso! Status: " + statusCode);
                 Toast.makeText(CustomerFormActivity.this, "Cliente atualizado com sucesso!", Toast.LENGTH_SHORT).show();
                 finish();
             }
-            
+
             @Override
             public void onFailure(Exception e) {
                 showLoading(false);

@@ -116,7 +116,7 @@ public class SupabaseClient {
                     connection.setConnectTimeout(10000);
                     connection.setReadTimeout(10000);
                     
-                    if (method.equals("POST") || method.equals("PUT")) {
+                    if (method.equals("POST") || method.equals("PUT") || method.equals("PATCH")) {
                         connection.setRequestProperty("Prefer", "return=representation");
                         connection.setDoOutput(true);
                         
@@ -240,6 +240,14 @@ public class SupabaseClient {
                 String endpoint = "customers?company_id=eq." + companyId + "&select=*";
                 Type listType = new TypeToken<List<Customer>>(){}.getType();
                 executeRequest(endpoint, "GET", null, listType, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Customer> getCustomerById(String customerId) {
+            return callback -> {
+                String endpoint = "customers?id=eq." + customerId + "&select=*";
+                executeRequest(endpoint, "GET", null, Customer.class, callback);
             };
         }
 

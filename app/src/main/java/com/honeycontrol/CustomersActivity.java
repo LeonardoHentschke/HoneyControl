@@ -35,7 +35,7 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     private ProgressBar loadingProgressBar;
     
     private CustomerAdapter customerAdapter;
-    private List<Customer> customers = new ArrayList<>();
+    private final List<Customer> customers = new ArrayList<>();
     private SupabaseApi supabaseApi;
     private User currentUser;
     
@@ -216,6 +216,11 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     @Override
     public void onCustomerClick(Customer customer) {
         Toast.makeText(this, "Cliente: " + customer.getName(), Toast.LENGTH_SHORT).show();
+        // Abrir tela de edição ao clicar no cliente
+        Intent intent = new Intent(this, CustomerFormActivity.class);
+        intent.putExtra("edit_mode", true);
+        intent.putExtra("customer_id", customer.getId());
+        startActivity(intent);
     }
     
     @Override
@@ -223,7 +228,7 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
         // Abrir tela de edição
         Intent intent = new Intent(this, CustomerFormActivity.class);
         intent.putExtra("edit_mode", true);
-        intent.putExtra("customer_id", Long.parseLong(customer.getId()));
+        intent.putExtra("customer_id", customer.getId());
         startActivity(intent);
     }
     
