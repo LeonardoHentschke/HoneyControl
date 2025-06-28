@@ -54,6 +54,11 @@
             android:exported="false"
             android:parentActivityName=".DashboardActivity" />
 
+        <activity
+            android:name=".CustomerFormActivity"
+            android:exported="false"
+            android:parentActivityName=".CustomersActivity" />
+
     </application>
 
 </manifest>

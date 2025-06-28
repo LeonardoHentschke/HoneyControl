@@ -19,6 +19,7 @@ import java.util.Collections;
 import com.google.gson.reflect.TypeToken;
 import com.honeycontrol.requests.CompanyCreateRequest;
 import com.honeycontrol.requests.UserCreateRequest;
+import com.honeycontrol.requests.CustomerCreateRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -233,6 +234,37 @@ public class SupabaseClient {
             return callback -> {
                 String endpoint = "users?email=eq." + email + "&select=*";
                 executeRequest(endpoint, "GET", null, User.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<List<Customer>> getCustomersByCompany(long companyId) {
+            return callback -> {
+                String endpoint = "customers?company_id=eq." + companyId + "&select=*";
+                Type listType = new TypeToken<List<Customer>>(){}.getType();
+                executeRequest(endpoint, "GET", null, listType, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Customer> createCustomer(CustomerCreateRequest customerRequest) {
+            return callback -> executeRequest("customers", "POST", customerRequest,
+                    Customer.class, callback);
+        }
+
+        @Override
+        public ApiCall<Customer> updateCustomer(long customerId, CustomerCreateRequest customerRequest) {
+            return callback -> {
+                String endpoint = "customers?id=eq." + customerId;
+                executeRequest(endpoint, "PATCH", customerRequest, Customer.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Void> deleteCustomer(long customerId) {
+            return callback -> {
+                String endpoint = "customers?id=eq." + customerId;
+                executeRequest(endpoint, "DELETE", null, Void.class, callback);
             };
         }
     }

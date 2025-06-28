@@ -1,82 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/neutral_900"
-    android:paddingTop="48dp"
-    android:paddingBottom="24dp"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp"
     tools:context=".CustomersActivity">
 
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="32dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Clientes"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/amber_400" />
-
-    </LinearLayout>
-
-    <!-- Conteúdo central -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center">
+        android:paddingTop="48dp"
+        android:paddingBottom="24dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
 
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@android:drawable/ic_menu_my_calendar"
-            android:layout_marginBottom="16dp"
-            app:tint="@color/amber_400" />
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
 
-        <TextView
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Clientes"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/amber_400" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/backToDashboardButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Voltar"
+                android:textSize="14sp"
+                app:backgroundTint="@color/neutral_700"
+                app:cornerRadius="8dp"
+                android:textColor="@color/neutral_50"
+                app:icon="@android:drawable/ic_menu_revert"
+                app:iconTint="@color/neutral_50"
+                style="@style/Widget.Material3.Button.OutlinedButton" />
+
+        </LinearLayout>
+
+        <!-- Loading/Empty State -->
+        <LinearLayout
+            android:id="@+id/emptyStateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@android:drawable/ic_menu_my_calendar"
+                android:layout_marginBottom="16dp"
+                app:tint="@color/amber_400" />
+
+            <TextView
+                android:id="@+id/emptyStateTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nenhum cliente encontrado"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/neutral_50"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/emptyStateMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adicione seu primeiro cliente clicando no botão +"
+                android:textSize="14sp"
+                android:textColor="@color/neutral_400"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <!-- Lista de clientes -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/customersRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingBottom="16dp"
+            android:clipToPadding="false" />
+
+        <!-- Loading indicator -->
+        <ProgressBar
+            android:id="@+id/loadingProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gerenciamento de Clientes"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/neutral_50"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Funcionalidade em desenvolvimento"
-            android:textSize="16sp"
-            android:textColor="@color/neutral_400"
-            android:gravity="center" />
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:indeterminateTint="@color/amber_400"
+            android:visibility="gone" />
 
     </LinearLayout>
 
-    <!-- Botão de retorno -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/backToDashboardButton"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Voltar ao Menu Principal"
-        android:textSize="16sp"
-        android:textStyle="bold"
+    <!-- FAB para adicionar cliente -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addCustomerFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:src="@android:drawable/ic_input_add"
         app:backgroundTint="@color/amber_400"
-        app:cornerRadius="12dp"
-        android:textColor="@color/neutral_900"
-        app:icon="@android:drawable/ic_menu_revert"
-        app:iconTint="@color/neutral_900" />
+        app:tint="@color/neutral_900" />
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
