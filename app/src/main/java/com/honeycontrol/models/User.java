@@ -9,6 +9,7 @@ public class User {
     private String password_hash;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
+    private String company_id;
 
     public String getId() {
         return id;
@@ -56,5 +57,13 @@ public class User {
 
     public void setUpdated_at(LocalDateTime updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public String getCompanyId() {
+        return company_id;
+    }
+
+    public void setCompanyId(String company_id) {
+        this.company_id = company_id;
     }
 }

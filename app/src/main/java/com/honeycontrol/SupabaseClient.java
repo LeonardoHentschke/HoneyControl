@@ -1,5 +1,7 @@
 package com.honeycontrol;
 
+import android.annotation.SuppressLint;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
@@ -20,7 +22,7 @@ public class SupabaseClient {
     public static Retrofit getClient() {
         if (retrofit == null) {
             // Configurar Gson para lidar com o formato de data do Supabase
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             
             Gson gson = new GsonBuilder()
