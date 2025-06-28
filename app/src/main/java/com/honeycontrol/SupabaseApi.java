@@ -12,8 +12,8 @@ public interface SupabaseApi {
     ApiCall<Companies> createCompanies(CompanyCreateRequest companyRequest);
     ApiCall<User> createUser(UserCreateRequest userRequest);
     ApiCall<User> getUserByEmail(String email);
-    ApiCall<List<Customer>> getCustomersByCompany(long companyId);
+    ApiCall<List<Customer>> getCustomersByCompany(String companyId);
     ApiCall<Customer> createCustomer(CustomerCreateRequest customerRequest);
-    ApiCall<Customer> updateCustomer(long customerId, CustomerCreateRequest customerRequest);
-    ApiCall<Void> deleteCustomer(long customerId);
+    ApiCall<Customer> updateCustomer(String customerId, CustomerCreateRequest customerRequest);
+    ApiCall<Void> deleteCustomer(String customerId);
 }

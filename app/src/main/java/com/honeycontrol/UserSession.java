@@ -53,7 +53,14 @@ public class UserSession {
      * Verifica se há um usuário logado
      */
     public boolean isUserLoggedIn() {
-        return currentUser != null && isUserLoaded;
+        boolean hasUser = currentUser != null;
+        boolean isLoaded = isUserLoaded;
+        Log.d(TAG, "isUserLoggedIn() - hasUser: " + hasUser + ", isLoaded: " + isLoaded);
+        if (currentUser != null) {
+            Log.d(TAG, "  - User name: " + currentUser.getName());
+            Log.d(TAG, "  - User company_id: " + currentUser.getCompanyId());
+        }
+        return hasUser && isLoaded;
     }
     
     /**
@@ -88,8 +95,11 @@ public class UserSession {
      * Carrega o usuário da sessão usando o email armazenado nas preferências
      */
     public void loadUserFromPreferences(Context context, UserLoadCallback callback) {
+        Log.d(TAG, "loadUserFromPreferences() iniciado");
+        
         if (isUserLoaded && currentUser != null) {
             // Usuário já carregado, retornar imediatamente
+            Log.d(TAG, "Usuário já carregado em memória, retornando: " + currentUser.getName());
             callback.onUserLoaded(currentUser);
             return;
         }
@@ -97,30 +107,41 @@ public class UserSession {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String userEmail = prefs.getString(USER_EMAIL_KEY, "");
         
+        Log.d(TAG, "Email recuperado das preferências: '" + userEmail + "'");
+        
         if (userEmail.isEmpty()) {
             Log.e(TAG, "Email do usuário não encontrado nas preferências");
             callback.onLoadFailed("Email não encontrado");
             return;
         }
         
+        Log.d(TAG, "Buscando usuário pelo email na API...");
+        
         // Buscar usuário pelo email
         SupabaseApi supabaseApi = SupabaseClient.createService(SupabaseApi.class);
+        if (supabaseApi == null) {
+            Log.e(TAG, "Falha ao criar instância da API");
+            callback.onLoadFailed("Erro na API");
+            return;
+        }
+        
         supabaseApi.getUserByEmail(userEmail).enqueue(new ApiCallback<User>() {
             @Override
             public void onSuccess(User user, int statusCode) {
+                Log.d(TAG, "Resposta da API recebida - Status: " + statusCode);
                 if (user != null) {
+                    Log.d(TAG, "Usuário encontrado: " + user.getName() + " (Company: " + user.getCompanyId() + ")");
                     setCurrentUser(user);
-                    Log.d(TAG, "Usuário carregado com sucesso: " + user.getName());
                     callback.onUserLoaded(user);
                 } else {
-                    Log.e(TAG, "Usuário não encontrado para o email: " + userEmail);
+                    Log.e(TAG, "Usuário é null na resposta da API para o email: " + userEmail);
                     callback.onLoadFailed("Usuário não encontrado");
                 }
             }
             
             @Override
             public void onFailure(Exception e) {
-                Log.e(TAG, "Erro ao carregar usuário: " + e.getMessage());
+                Log.e(TAG, "Erro ao carregar usuário da API: " + e.getMessage(), e);
                 callback.onLoadFailed("Erro ao carregar usuário: " + e.getMessage());
             }
         });

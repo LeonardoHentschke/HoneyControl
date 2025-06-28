@@ -140,7 +140,6 @@ public class SupabaseClient {
                             }
                             
                             String jsonResponse = response.toString();
-                            Log.d(TAG, "API response: " + jsonResponse);
                             
                             // Verificamos se a resposta é uma lista ou objeto
                             T result;
@@ -236,7 +235,7 @@ public class SupabaseClient {
         }
 
         @Override
-        public ApiCall<List<Customer>> getCustomersByCompany(long companyId) {
+        public ApiCall<List<Customer>> getCustomersByCompany(String companyId) {
             return callback -> {
                 String endpoint = "customers?company_id=eq." + companyId + "&select=*";
                 Type listType = new TypeToken<List<Customer>>(){}.getType();
