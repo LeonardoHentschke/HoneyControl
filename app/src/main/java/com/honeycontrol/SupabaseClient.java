@@ -104,9 +104,7 @@ public class SupabaseClient {
     }
 
     public static class SupabaseApiImplementation implements SupabaseApi {
-        private <T> void executeRequest(String endpoint, String method, Object body,
-                                        Type responseType,
-                                     ApiCallback<T> callback) {
+        private <T> void executeRequest(String endpoint, String method, Object body, Type responseType, ApiCallback<T> callback) {
             executor.execute(() -> {
                 HttpURLConnection connection = null;
                 try {

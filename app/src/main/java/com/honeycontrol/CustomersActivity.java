@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.honeycontrol.adapters.CustomerAdapter;
 import com.honeycontrol.models.Customer;
 import com.honeycontrol.models.User;
+import com.honeycontrol.utils.SessionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,6 @@ import java.util.List;
 public class CustomersActivity extends BaseActivity implements CustomerAdapter.OnCustomerClickListener {
     
     private static final String TAG = "CustomersActivity";
-    private static final String PREFS_NAME = "HoneyControlPrefs";
     
     private MaterialButton backToDashboardButton;
     private FloatingActionButton addCustomerFab;
@@ -82,49 +82,41 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     }
     
     private void loadCurrentUser() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String userEmail = prefs.getString("user_email", "");
-        
-        if (!userEmail.isEmpty()) {
-            supabaseApi.getUserByEmail(userEmail).enqueue(new ApiCallback<User>() {
+        // Usar a sessão global para obter o usuário
+        if (UserSession.getInstance().isUserLoggedIn()) {
+            currentUser = UserSession.getInstance().getCurrentUser();
+            Log.d(TAG, "Usuário carregado da sessão: " + SessionUtils.getCurrentUserName() + ", Company ID: " + SessionUtils.getCurrentUserCompanyId());
+            loadCustomers();
+        } else {
+            // Se não estiver na sessão, tentar carregar das preferências
+            UserSession.getInstance().loadUserFromPreferences(this, new UserSession.UserLoadCallback() {
                 @Override
-                public void onSuccess(User user, int statusCode) {
+                public void onUserLoaded(User user) {
                     currentUser = user;
-                    Log.d(TAG, "Usuário carregado: " + user.getName() + ", Company ID: " + user.getCompanyId());
+                    Log.d(TAG, "Usuário carregado das preferências: " + user.getName() + ", Company ID: " + user.getCompanyId());
                     loadCustomers();
                 }
                 
                 @Override
-                public void onFailure(Exception e) {
-                    Log.e(TAG, "Erro ao carregar usuário: " + e.getMessage());
+                public void onLoadFailed(String error) {
+                    Log.e(TAG, "Erro ao carregar usuário: " + error);
                     Toast.makeText(CustomersActivity.this, "Erro ao carregar dados do usuário", Toast.LENGTH_SHORT).show();
                     showEmptyState();
                 }
             });
-        } else {
-            Log.e(TAG, "Email do usuário não encontrado nas preferências");
-            showEmptyState();
         }
     }
     
     private void loadCustomers() {
-        if (currentUser == null) {
-            Log.e(TAG, "Usuário atual é nulo");
+        // Usar a função utilitária para obter o company_id de forma segura
+        long companyId = SessionUtils.getCurrentUserCompanyIdAsLong();
+        if (companyId == -1) {
+            Log.e(TAG, "Company ID inválido ou usuário não logado");
             showEmptyState();
             return;
         }
         
         showLoading(true);
-        
-        // Converter company_id de string para long
-        long companyId;
-        try {
-            companyId = Long.parseLong(currentUser.getCompanyId());
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "Erro ao converter company_id: " + e.getMessage());
-            showEmptyState();
-            return;
-        }
         
         supabaseApi.getCustomersByCompany(companyId).enqueue(new ApiCallback<List<Customer>>() {
             @Override
@@ -175,7 +167,7 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     protected void onResume() {
         super.onResume();
         // Recarregar clientes quando voltar de outras telas
-        if (currentUser != null) {
+        if (SessionUtils.isUserLoggedIn()) {
             loadCustomers();
         }
     }

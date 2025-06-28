@@ -1,27 +1,35 @@
 package com.honeycontrol.requests;
 
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
 
 public class CustomerCreateRequest {
     @SerializedName("name")
+    @Expose
     private String name;
     
     @SerializedName("email")
+    @Expose
     private String email;
     
     @SerializedName("phone")
+    @Expose
     private String phone;
 
     @SerializedName("document")
+    @Expose
     private String document;
     
     @SerializedName("address")
+    @Expose
     private String address;
     
     @SerializedName("city")
+    @Expose
     private String city;
     
     @SerializedName("company_id")
+    @Expose
     private String companyId;
 
     public CustomerCreateRequest(String name, String email, String phone, String document, String address, String city, String companyId) {
@@ -34,7 +42,6 @@ public class CustomerCreateRequest {
         this.companyId = companyId;
     }
 
-    // Getters and setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 

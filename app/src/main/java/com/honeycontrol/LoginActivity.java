@@ -81,6 +81,10 @@ public class LoginActivity extends BaseActivity {
                             // Login bem-sucedido
                             Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show();
 
+                            // Salvar usuário na sessão global
+                            UserSession.getInstance().setCurrentUser(user);
+                            UserSession.getInstance().saveUserEmail(LoginActivity.this, email);
+
                             // Navegar para DashboardActivity
                             Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

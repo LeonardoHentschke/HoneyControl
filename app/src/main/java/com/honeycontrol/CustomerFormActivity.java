@@ -1,6 +1,5 @@
 package com.honeycontrol;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,11 +12,11 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.honeycontrol.models.Customer;
 import com.honeycontrol.models.User;
 import com.honeycontrol.requests.CustomerCreateRequest;
+import com.honeycontrol.utils.SessionUtils;
 
 public class CustomerFormActivity extends BaseActivity {
     
     private static final String TAG = "CustomerFormActivity";
-    private static final String PREFS_NAME = "HoneyControlPrefs";
     
     private TextInputLayout nameInputLayout;
     private TextInputEditText nameEditText;
@@ -36,7 +35,6 @@ public class CustomerFormActivity extends BaseActivity {
     private ProgressBar loadingProgressBar;
     
     private SupabaseApi supabaseApi;
-    private User currentUser;
     private Customer editingCustomer;
     private boolean isEditMode = false;
     private long customerId = -1;
@@ -103,20 +101,20 @@ public class CustomerFormActivity extends BaseActivity {
     }
     
     private void loadCurrentUser() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String userEmail = prefs.getString("user_email", "");
-
-        if (!userEmail.isEmpty()) {
-            supabaseApi.getUserByEmail(userEmail).enqueue(new ApiCallback<User>() {
+        // Usar a sessão global para obter o usuário
+        if (SessionUtils.isUserLoggedIn()) {
+            Log.d(TAG, "Usuário carregado da sessão: " + SessionUtils.getCurrentUserName());
+        } else {
+            // Se não estiver na sessão, tentar carregar das preferências
+            UserSession.getInstance().loadUserFromPreferences(this, new UserSession.UserLoadCallback() {
                 @Override
-                public void onSuccess(User user, int statusCode) {
-                    currentUser = user;
-                    Log.d(TAG, "Usuário carregado: " + user.getName());
+                public void onUserLoaded(User user) {
+                    Log.d(TAG, "Usuário carregado das preferências: " + user.getName());
                 }
                 
                 @Override
-                public void onFailure(Exception e) {
-                    Log.e(TAG, "Erro ao carregar usuário: " + e.getMessage());
+                public void onLoadFailed(String error) {
+                    Log.e(TAG, "Erro ao carregar usuário: " + error);
                     Toast.makeText(CustomerFormActivity.this, "Erro ao carregar dados do usuário", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -171,31 +169,38 @@ public class CustomerFormActivity extends BaseActivity {
     }
 
     private void createCustomer() {
-        if (currentUser == null) {
+        // Usar a função utilitária para verificar se o usuário está logado
+        if (!SessionUtils.isUserLoggedIn()) {
             Toast.makeText(this, "Erro: usuário não carregado", Toast.LENGTH_SHORT).show();
             return;
         }
         
         showLoading(true);
         
+        // Capturar dados dos campos
+        String name = nameEditText.getText().toString().trim();
+        String email = emailEditText.getText().toString().trim();
+        String phone = phoneEditText.getText().toString().trim();
+        String document = documentEditText.getText().toString().trim();
+        String address = addressEditText.getText().toString().trim();
+        String city = cityEditText.getText().toString().trim();
+        String companyId = SessionUtils.getCurrentUserCompanyId();
+        
+        // Log para debug
+        Log.d(TAG, "Criando cliente - Nome: " + name + ", Email: " + email + ", Company ID: " + companyId);
+        
         CustomerCreateRequest request = new CustomerCreateRequest(
-            nameEditText.getText().toString().trim(),
-            emailEditText.getText().toString().trim(),
-            phoneEditText.getText().toString().trim(),
-            documentEditText.getText().toString().trim(),
-            addressEditText.getText().toString().trim(),
-            cityEditText.getText().toString().trim(),
-            currentUser.getCompanyId()
+            name, email, phone, document, address, city, companyId
         );
         
-        supabaseApi.createCustomer(request).enqueue(new ApiCallback<Customer>() {
+        supabaseApi.createCustomer(request).enqueue(new ApiCallback<>() {
             @Override
             public void onSuccess(Customer customer, int statusCode) {
                 showLoading(false);
                 Toast.makeText(CustomerFormActivity.this, "Cliente criado com sucesso!", Toast.LENGTH_SHORT).show();
                 finish();
             }
-            
+
             @Override
             public void onFailure(Exception e) {
                 showLoading(false);
@@ -206,21 +211,28 @@ public class CustomerFormActivity extends BaseActivity {
     }
     
     private void updateCustomer() {
-        if (currentUser == null) {
+        // Usar a função utilitária para verificar se o usuário está logado
+        if (!SessionUtils.isUserLoggedIn()) {
             Toast.makeText(this, "Erro: usuário não carregado", Toast.LENGTH_SHORT).show();
             return;
         }
         
         showLoading(true);
         
+        // Capturar dados dos campos
+        String name = nameEditText.getText().toString().trim();
+        String email = emailEditText.getText().toString().trim();
+        String phone = phoneEditText.getText().toString().trim();
+        String document = documentEditText.getText().toString().trim();
+        String address = addressEditText.getText().toString().trim();
+        String city = cityEditText.getText().toString().trim();
+        String companyId = SessionUtils.getCurrentUserCompanyId();
+        
+        // Log para debug
+        Log.d(TAG, "Atualizando cliente - Nome: " + name + ", Email: " + email + ", Company ID: " + companyId);
+        
         CustomerCreateRequest request = new CustomerCreateRequest(
-            nameEditText.getText().toString().trim(),
-            emailEditText.getText().toString().trim(),
-            phoneEditText.getText().toString().trim(),
-            documentEditText.getText().toString().trim(),
-            addressEditText.getText().toString().trim(),
-            cityEditText.getText().toString().trim(),
-            currentUser.getCompanyId()
+            name, email, phone, document, address, city, companyId
         );
         
         supabaseApi.updateCustomer(customerId, request).enqueue(new ApiCallback<Customer>() {
