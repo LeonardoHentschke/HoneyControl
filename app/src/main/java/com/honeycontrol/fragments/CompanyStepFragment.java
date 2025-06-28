@@ -37,11 +37,11 @@ public class CompanyStepFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         initViews(view);
         setupObservers();
         setupTextWatcher();
-        
+
         // Restaurar dados se houver
         String savedCompanyName = viewModel.getCompanyName().getValue();
         if (savedCompanyName != null) {

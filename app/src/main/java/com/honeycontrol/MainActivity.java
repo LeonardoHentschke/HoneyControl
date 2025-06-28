@@ -43,10 +43,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewCompanies.setAdapter(companiesAdapter);
 
         SupabaseApi api = SupabaseClient.getClient().create(SupabaseApi.class);
-        
-        // Log para debug
-        Log.d("MainActivity", "Iniciando carregamento das companies...");
-        
+
         loadCompanies(api);
     }
     
@@ -55,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         Call<List<Companies>> call = api.getCompanies();
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<List<Companies>> call, Response<List<Companies>> response) {
+            public void onResponse(@NonNull Call<List<Companies>> call, @NonNull Response<List<Companies>> response) {
                 Log.d("MainActivity", "Resposta recebida - Código: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     currentCompaniesList = response.body();

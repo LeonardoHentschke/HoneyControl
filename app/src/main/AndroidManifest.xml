@@ -28,10 +28,6 @@
             android:name=".SignupWizardActivity"
             android:exported="false"
             android:parentActivityName=".LoginActivity" />
-            
-        <activity
-            android:name=".DashboardActivity"
-            android:exported="false" />
 
     </application>
 

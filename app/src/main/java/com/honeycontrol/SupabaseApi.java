@@ -1,6 +1,5 @@
 package com.honeycontrol;
 
-import com.honeycontrol.models.AuthResponse;
 import com.honeycontrol.models.Companies;
 import com.honeycontrol.models.Cost;
 import com.honeycontrol.models.Customer;
@@ -21,7 +20,6 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -207,49 +205,4 @@ public interface SupabaseApi {
 
     @DELETE("stock-logs/{id}")
     Call<Void> deleteStockLog(@Path("id") String id);
-    
-    // Authentication Endpoints
-    @POST("auth/signup")
-    Call<User> signup(@Body SignupRequest signupRequest);
-    
-    @POST("auth/login")
-    Call<AuthResponse> login(@Body LoginRequest loginRequest);
-    
-    @POST("auth/logout")
-    Call<Void> logout();
-    
-    @GET("auth/me")
-    Call<User> getCurrentUser();
-    
-    @POST("auth/reset-password")
-    Call<Void> resetPassword(@Body ResetPasswordRequest resetPasswordRequest);
-    
-    // Advanced endpoints for reporting and analytics
-    @GET("dashboard/summary")
-    Call<DashboardSummary> getDashboardSummary(@Query("company_id") String companyId);
-    
-    @GET("reports/sales")
-    Call<List<Sale>> getSalesReport(@Query("company_id") String companyId, 
-                                  @Query("start_date") String startDate, 
-                                  @Query("end_date") String endDate, 
-                                  @Query("customer_id") String customerId);
-    
-    @GET("reports/costs")
-    Call<List<Cost>> getCostsReport(@Query("company_id") String companyId, 
-                                  @Query("start_date") String startDate, 
-                                  @Query("end_date") String endDate,
-                                  @Query("category") String category);
-    
-    @GET("reports/inventory")
-    Call<List<Stock>> getInventoryReport(@Query("company_id") String companyId, 
-                                       @Query("low_stock") Boolean lowStock);
-    
-    // Search Endpoints
-    @GET("search/products")
-    Call<List<Product>> searchProducts(@Query("company_id") String companyId, 
-                                     @Query("query") String query);
-    
-    @GET("search/customers")
-    Call<List<Customer>> searchCustomers(@Query("company_id") String companyId, 
-                                       @Query("query") String query);
 }
