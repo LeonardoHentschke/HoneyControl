@@ -149,8 +149,7 @@ public class SupabaseClient {
                                 result = null;
                             } else {
                                 try {
-                                    JsonParser parser = new JsonParser();
-                                    JsonElement jsonElement = parser.parse(jsonResponse);
+                                    JsonElement jsonElement = JsonParser.parseString(jsonResponse);
                                     if (jsonElement.isJsonArray() && 
                                             !List.class.isAssignableFrom(TypeToken.get(responseType).getRawType())) {
                                         // Se esperamos um objeto mas recebemos um array
@@ -355,7 +354,7 @@ public class SupabaseClient {
                 productIds.append(products.get(i).getId());
             }
 
-            String stockEndpoint = "stock?product_id=in.(" + productIds + ")&select=product_id,quantity";
+            String stockEndpoint = "stocks?product_id=in.(" + productIds + ")&select=product_id,quantity";
             Type stockListType = new TypeToken<List<Stock>>(){}.getType();
             
             executeRequest(stockEndpoint, "GET", null, stockListType, new ApiCallback<List<Stock>>() {
