@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.honeycontrol.models.StockLog;
+import com.honeycontrol.requests.StockLogCreateRequest;
 import com.honeycontrol.services.ApiCallback;
 import com.honeycontrol.BaseActivity;
 import com.honeycontrol.R;
@@ -31,8 +33,11 @@ import com.honeycontrol.models.Customer;
 import com.honeycontrol.models.Product;
 import com.honeycontrol.models.TempSaleItem;
 import com.honeycontrol.models.User;
+import com.honeycontrol.models.SaleItem;
 import com.honeycontrol.utils.SessionUtils;
 import com.honeycontrol.adapters.SaleItemAdapter;
+import com.honeycontrol.requests.SaleCreateRequest;
+import com.honeycontrol.requests.SaleItemCreateRequest;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -174,26 +179,26 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
         String companyId = SessionUtils.getCurrentUserCompanyId();
         Log.d(TAG, "Carregando clientes da empresa: " + companyId);
         
-        supabaseApi.getCustomersByCompany(companyId).enqueue(new ApiCallback<List<Customer>>() {
+        supabaseApi.getCustomersByCompany(companyId).enqueue(new ApiCallback<>() {
             @Override
             public void onSuccess(List<Customer> customerList, int statusCode) {
                 if (customerList != null) {
                     customers.clear();
                     customers.addAll(customerList);
-                    
+
                     List<String> customerNames = new ArrayList<>();
                     for (Customer customer : customers) {
                         customerNames.add(customer.getName());
                     }
-                    
+
                     customerAdapter.clear();
                     customerAdapter.addAll(customerNames);
                     customerAdapter.notifyDataSetChanged();
-                    
+
                     Log.d(TAG, "Clientes carregados: " + customers.size());
                 }
             }
-            
+
             @Override
             public void onFailure(Exception e) {
                 Log.e(TAG, "Erro ao carregar clientes: " + e.getMessage());
@@ -206,27 +211,27 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
         String companyId = SessionUtils.getCurrentUserCompanyId();
         Log.d(TAG, "Carregando produtos da empresa: " + companyId);
         
-        supabaseApi.getProductsWithStockByCompany(companyId).enqueue(new ApiCallback<List<Product>>() {
+        supabaseApi.getProductsWithStockByCompany(companyId).enqueue(new ApiCallback<>() {
             @Override
             public void onSuccess(List<Product> productList, int statusCode) {
                 if (productList != null) {
                     products.clear();
                     products.addAll(productList);
-                    
+
                     // Atualizar adapter de produtos
                     List<String> productNames = new ArrayList<>();
                     for (Product product : products) {
                         productNames.add(product.getName());
                     }
-                    
+
                     productAdapter.clear();
                     productAdapter.addAll(productNames);
                     productAdapter.notifyDataSetChanged();
-                    
+
                     Log.d(TAG, "Produtos carregados: " + products.size());
                 }
             }
-            
+
             @Override
             public void onFailure(Exception e) {
                 Log.e(TAG, "Erro ao carregar produtos: " + e.getMessage());
@@ -237,7 +242,7 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
     
     private void loadSaleForEdit() {
         showLoading(true);
-        supabaseApi.getSaleById(saleId).enqueue(new ApiCallback<Sale>() {
+        supabaseApi.getSaleById(saleId).enqueue(new ApiCallback<>() {
             @Override
             public void onSuccess(Sale sale, int statusCode) {
                 showLoading(false);
@@ -501,8 +506,157 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
     }
     
     private void createSale() {
-        // TODO: Implementar criação de venda
-        Toast.makeText(this, "Funcionalidade de criar venda em desenvolvimento", Toast.LENGTH_SHORT).show();
+        showLoading(true);
+        
+        // Buscar customer ID pelo nome selecionado
+        String customerName = customerAutoComplete.getText().toString().trim();
+        Customer selectedCustomer = null;
+        for (Customer customer : customers) {
+            if (customer.getName().equals(customerName)) {
+                selectedCustomer = customer;
+                break;
+            }
+        }
+        
+        if (selectedCustomer == null) {
+            showLoading(false);
+            Toast.makeText(this, "Cliente não encontrado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Calcular total
+        float total = 0;
+        for (TempSaleItem item : saleItems) {
+            total += item.getSubtotal();
+        }
+        
+        // Obter dados do usuário atual
+        String companyId = SessionUtils.getCurrentUserCompanyId();
+        String userId = SessionUtils.getCurrentUserId();
+        
+        // Criar request da venda
+        SaleCreateRequest saleRequest = new SaleCreateRequest(
+            companyId,
+            selectedCustomer.getId(),
+            userId,
+            total
+        );
+        
+        // Criar a venda primeiro
+        supabaseApi.createSale(saleRequest).enqueue(new ApiCallback<>() {
+            @Override
+            public void onSuccess(Sale sale, int statusCode) {
+                Log.d(TAG, "Venda criada com sucesso: " + sale.getId());
+                
+                // Agora criar os itens da venda
+                createSaleItems(sale.getId());
+            }
+            
+            @Override
+            public void onFailure(Exception e) {
+                showLoading(false);
+                Log.e(TAG, "Erro ao criar venda: " + e.getMessage());
+                Toast.makeText(SaleFormActivity.this, "Erro ao criar venda: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
+    private void createSaleItems(String saleId) {
+        final int totalItems = saleItems.size();
+        final int[] itemsCreated = {0};
+        final boolean[] hasError = {false};
+        
+        // Criar cada item da venda
+        for (TempSaleItem tempItem : saleItems) {
+            SaleItemCreateRequest itemRequest = new SaleItemCreateRequest(
+                saleId,
+                tempItem.getProduct().getId(),
+                tempItem.getQuantity(),
+                tempItem.getUnitPrice(),
+                tempItem.getSubtotal(),
+                tempItem.getDiscount()
+            );
+            
+            supabaseApi.createSaleItem(itemRequest).enqueue(new ApiCallback<>() {
+                @Override
+                public void onSuccess(SaleItem saleItem, int statusCode) {
+                    itemsCreated[0]++;
+                    Log.d(TAG, "Item criado: " + itemsCreated[0] + "/" + totalItems);
+                    
+                    // Verificar se todos os itens foram criados
+                    if (itemsCreated[0] == totalItems && !hasError[0]) {
+                        // Atualizar estoque dos produtos
+                        updateProductsStock();
+                    }
+                }
+                
+                @Override
+                public void onFailure(Exception e) {
+                    if (!hasError[0]) {
+                        hasError[0] = true;
+                        showLoading(false);
+                        Log.e(TAG, "Erro ao criar item da venda: " + e.getMessage());
+                        Toast.makeText(SaleFormActivity.this, "Erro ao criar itens da venda", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    }
+    
+    private void updateProductsStock() {
+        final int totalProducts = saleItems.size();
+        final int[] productsUpdated = {0};
+        final boolean[] hasError = {false};
+        
+        // Atualizar estoque de cada produto
+        for (TempSaleItem tempItem : saleItems) {
+            Product product = tempItem.getProduct();
+            int newQuantity = product.getStockQuantity() - tempItem.getQuantity();
+            
+            // Criar log de saída do estoque
+            if (product.getStock() != null) {
+                StockLogCreateRequest logRequest = new StockLogCreateRequest(
+                    product.getStock().getId(),
+                    -tempItem.getQuantity(),
+                    "SAIDA",
+                    "Venda - Item vendido"
+                );
+                
+                supabaseApi.createStockLog(logRequest).enqueue(new ApiCallback<>() {
+                    @Override
+                    public void onSuccess(StockLog stockLog, int statusCode) {
+                        productsUpdated[0]++;
+                        Log.d(TAG, "Estoque atualizado: " + productsUpdated[0] + "/" + totalProducts);
+
+                        // Verificar se todos os produtos foram atualizados
+                        if (productsUpdated[0] == totalProducts && !hasError[0]) {
+                            showLoading(false);
+                            Toast.makeText(SaleFormActivity.this, "Venda criada com sucesso!", Toast.LENGTH_SHORT).show();
+                            finish(); // Voltar para a tela anterior
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        if (!hasError[0]) {
+                            hasError[0] = true;
+                            showLoading(false);
+                            Log.e(TAG, "Erro ao atualizar estoque: " + e.getMessage());
+                            Toast.makeText(SaleFormActivity.this, "Venda criada, mas houve erro ao atualizar estoque", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    }
+                });
+            } else {
+                // Se não tem estoque cadastrado, apenas conta como processado
+                productsUpdated[0]++;
+                if (productsUpdated[0] == totalProducts && !hasError[0]) {
+                    showLoading(false);
+                    Toast.makeText(SaleFormActivity.this, "Venda criada com sucesso!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        }
     }
     
     private void updateSale() {

@@ -25,6 +25,8 @@ import com.honeycontrol.requests.ProductCreateRequest;
 import com.honeycontrol.requests.StockCreateRequest;
 import com.honeycontrol.requests.StockUpdateRequest;
 import com.honeycontrol.requests.StockLogCreateRequest;
+import com.honeycontrol.requests.SaleCreateRequest;
+import com.honeycontrol.requests.SaleItemCreateRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -480,6 +482,16 @@ public class SupabaseClient {
                 String endpoint = "sales?id=eq." + saleId + "&select=*,sale_items(*)";
                 executeRequest(endpoint, "GET", null, Sale.class, callback);
             };
+        }
+
+        @Override
+        public ApiCall<Sale> createSale(SaleCreateRequest saleRequest) {
+            return callback -> executeRequest("sales", "POST", saleRequest, Sale.class, callback);
+        }
+
+        @Override
+        public ApiCall<SaleItem> createSaleItem(SaleItemCreateRequest saleItemRequest) {
+            return callback -> executeRequest("sale_items", "POST", saleItemRequest, SaleItem.class, callback);
         }
     }
 
