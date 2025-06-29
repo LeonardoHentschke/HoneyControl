@@ -21,10 +21,48 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
         
+        // Verificar se o usuário já está logado antes de mostrar a tela de login
+        checkExistingSession();
+    }
+    
+    private void checkExistingSession() {
+        // Primeiro verificar se já há um usuário carregado na sessão
+        if (UserSession.getInstance().isUserLoggedIn()) {
+            // Usuário já está logado, ir direto para o dashboard
+            navigateToDashboard();
+            return;
+        }
+        
+        // Se não há usuário na sessão, tentar carregar das preferências
+        UserSession.getInstance().loadUserFromPreferences(this, new UserSession.UserLoadCallback() {
+            @Override
+            public void onUserLoaded(User user) {
+                // Usuário carregado com sucesso das preferências, ir para o dashboard
+                android.util.Log.d("LoginActivity", "Usuário carregado das preferências: " + user.getName());
+                navigateToDashboard();
+            }
+            
+            @Override
+            public void onLoadFailed(String error) {
+                // Falha ao carregar usuário, mostrar tela de login
+                android.util.Log.d("LoginActivity", "Falha ao carregar usuário: " + error);
+                showLoginScreen();
+            }
+        });
+    }
+    
+    private void showLoginScreen() {
+        setContentView(R.layout.login);
         initViews();
         setupClickListeners();
+    }
+    
+    private void navigateToDashboard() {
+        Intent intent = new Intent(this, DashboardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
     
     private void initViews() {
