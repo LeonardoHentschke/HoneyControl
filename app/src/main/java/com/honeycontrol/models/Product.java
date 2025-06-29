@@ -37,6 +37,9 @@ public class Product {
     @Expose(serialize = false)
     private LocalDateTime updated_at;
 
+    private Stock stock;
+    private Integer stockQuantity = 0; // Quantidade em estoque
+
     public String getId() {
         return id;
     }
@@ -99,5 +102,25 @@ public class Product {
 
     public void setUpdated_at(LocalDateTime updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public Stock getStock() {
+        return stock;
+    }
+
+    public void setStock(Stock stock) {
+        this.stock = stock;
+        // Atualizar quantidade do estoque automaticamente
+        if (stock != null) {
+            this.stockQuantity = stock.getQuantity();
+        }
+    }
+
+    public Integer getStockQuantity() {
+        return stockQuantity != null ? stockQuantity : 0;
+    }
+
+    public void setStockQuantity(Integer stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
 }

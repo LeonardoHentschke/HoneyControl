@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.honeycontrol.R;
 import com.honeycontrol.models.Product;
@@ -46,12 +47,28 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         Product product = products.get(position);
         
         holder.nameTextView.setText(product.getName());
-        holder.descriptionTextView.setText(product.getDescription() != null ? product.getDescription() : "");
-        holder.unitTextView.setText(product.getUnit() != null ? product.getUnit() : "");
+        holder.descriptionTextView.setText(product.getDescription() != null ? product.getDescription() : "Sem descrição");
+        holder.unitTextView.setText(product.getUnit() != null ? product.getUnit() : "un");
         
         // Format price as currency
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
         holder.priceTextView.setText(currencyFormat.format(product.getUnit_price()));
+        
+        // Exibir quantidade em estoque
+        Integer stockQuantity = product.getStockQuantity();
+        holder.stockQuantityTextView.setText(String.valueOf(stockQuantity));
+        
+        // Definir cor do estoque baseado na quantidade
+        if (stockQuantity == 0) {
+            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+        } else if (stockQuantity <= 5) {
+            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark));
+            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark));
+        } else {
+            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark));
+            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark));
+        }
         
         // Click listeners
         holder.itemView.setOnClickListener(v -> {
@@ -88,6 +105,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         TextView descriptionTextView;
         TextView priceTextView;
         TextView unitTextView;
+        TextView stockQuantityTextView;
+        TextView stockLabelTextView;
         
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -95,6 +114,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             descriptionTextView = itemView.findViewById(R.id.productDescriptionTextView);
             priceTextView = itemView.findViewById(R.id.productPriceTextView);
             unitTextView = itemView.findViewById(R.id.productUnitTextView);
+            stockQuantityTextView = itemView.findViewById(R.id.productStockQuantityTextView);
+            stockLabelTextView = itemView.findViewById(R.id.productStockLabelTextView);
         }
     }
 }

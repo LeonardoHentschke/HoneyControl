@@ -27,6 +27,7 @@ public interface SupabaseApi {
     ApiCall<Cost> updateCost(String costId, CostCreateRequest costRequest);
     ApiCall<Void> deleteCost(String costId);
     ApiCall<List<Product>> getProductsByCompany(String companyId);
+    ApiCall<List<Product>> getProductsWithStockByCompany(String companyId);
     ApiCall<Product> getProductById(String productId);
     ApiCall<Product> createProduct(ProductCreateRequest productRequest);
     ApiCall<Product> updateProduct(String productId, ProductCreateRequest productRequest);

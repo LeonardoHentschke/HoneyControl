@@ -324,6 +324,78 @@ public class SupabaseClient {
         }
 
         @Override
+        public ApiCall<List<Product>> getProductsWithStockByCompany(String companyId) {
+            return callback -> {
+                // Buscar produtos e estoques separadamente para evitar problemas com joins complexos
+                String endpoint = "products?company_id=eq." + companyId + "&select=*";
+                Type listType = new TypeToken<List<Product>>(){}.getType();
+                executeRequest(endpoint, "GET", null, listType, new ApiCallback<List<Product>>() {
+                    @Override
+                    public void onSuccess(List<Product> products, int statusCode) {
+                        if (products != null && !products.isEmpty()) {
+                            loadStockForProducts(products, callback);
+                        } else {
+                            callback.onSuccess(products, statusCode);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+                    }
+                });
+            };
+        }
+
+        private void loadStockForProducts(List<Product> products, ApiCallback<List<Product>> callback) {
+            // Construir lista de IDs dos produtos
+            StringBuilder productIds = new StringBuilder();
+            for (int i = 0; i < products.size(); i++) {
+                if (i > 0) productIds.append(",");
+                productIds.append(products.get(i).getId());
+            }
+
+            String stockEndpoint = "stock?product_id=in.(" + productIds + ")&select=product_id,quantity";
+            Type stockListType = new TypeToken<List<Stock>>(){}.getType();
+            
+            executeRequest(stockEndpoint, "GET", null, stockListType, new ApiCallback<List<Stock>>() {
+                @Override
+                public void onSuccess(List<Stock> stockList, int statusCode) {
+                    // Mapear estoque para produtos
+                    if (stockList != null) {
+                        for (Product product : products) {
+                            Integer stockQuantity = 0;
+                            for (Stock stock : stockList) {
+                                if (product.getId().equals(stock.getProduct_id())) {
+                                    stockQuantity = stock.getQuantity();
+                                    product.setStock(stock);
+                                    break;
+                                }
+                            }
+                            product.setStockQuantity(stockQuantity);
+                        }
+                    } else {
+                        // Se não houver dados de estoque, definir quantidade como 0
+                        for (Product product : products) {
+                            product.setStockQuantity(0);
+                        }
+                    }
+                    
+                    callback.onSuccess(products, statusCode);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    // Mesmo com erro no estoque, retornar produtos com estoque 0
+                    for (Product product : products) {
+                        product.setStockQuantity(0);
+                    }
+                    callback.onSuccess(products, 200);
+                }
+            });
+        }
+
+        @Override
         public ApiCall<Product> getProductById(String productId) {
             return callback -> {
                 String endpoint = "products?id=eq." + productId + "&select=*";

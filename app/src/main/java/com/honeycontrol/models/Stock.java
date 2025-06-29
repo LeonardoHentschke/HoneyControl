@@ -1,14 +1,31 @@
 package com.honeycontrol.models;
 
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Stock {
+    @SerializedName("id")
+    @Expose
     private String id;
+    
+    @SerializedName("product_id")
+    @Expose
     private String product_id;
+    
+    @SerializedName("quantity")
+    @Expose
     private Integer quantity;
+    
+    @SerializedName("created_at")
+    @Expose(serialize = false)
     private LocalDateTime created_at;
+    
+    @SerializedName("updated_at")
+    @Expose(serialize = false)
     private LocalDateTime updated_at;
+    
     private Product product;
     private List<StockLog> stockLogs;
 

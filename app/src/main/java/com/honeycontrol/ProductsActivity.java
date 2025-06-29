@@ -139,7 +139,7 @@ public class ProductsActivity extends BaseActivity implements ProductAdapter.OnP
         Log.d(TAG, "Fazendo chamada à API para buscar produtos da empresa: " + companyId);
         showLoading(true);
 
-        supabaseApi.getProductsByCompany(companyId).enqueue(new ApiCallback<List<Product>>() {
+        supabaseApi.getProductsWithStockByCompany(companyId).enqueue(new ApiCallback<List<Product>>() {
             @Override
             public void onSuccess(List<Product> productList, int statusCode) {
                 Log.d(TAG, "Resposta da API recebida com status: " + statusCode);
@@ -153,7 +153,7 @@ public class ProductsActivity extends BaseActivity implements ProductAdapter.OnP
                     showProductsList();
 
                     for (Product product : productList) {
-                        Log.d(TAG, "Produto: " + product.getName() + " (ID: " + product.getId() + ")");
+                        Log.d(TAG, "Produto: " + product.getName() + " (ID: " + product.getId() + ") - Estoque: " + product.getStockQuantity());
                     }
                 } else {
                     showEmptyState();
