@@ -1,14 +1,40 @@
 package com.honeycontrol.models;
 
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose;
 import java.time.LocalDateTime;
 
 public class Product {
+    @SerializedName("id")
+    @Expose(serialize = false)
     private String id;
+    
+    @SerializedName("name")
+    @Expose
     private String name;
+    
+    @SerializedName("description")
+    @Expose
     private String description;
+    
+    @SerializedName("unit_price")
+    @Expose
     private Float unit_price;
+    
+    @SerializedName("unit")
+    @Expose
     private String unit;
+    
+    @SerializedName("company_id")
+    @Expose
+    private String company_id;
+    
+    @SerializedName("created_at")
+    @Expose(serialize = false)
     private LocalDateTime created_at;
+    
+    @SerializedName("updated_at")
+    @Expose(serialize = false)
     private LocalDateTime updated_at;
 
     public String getId() {
@@ -49,6 +75,14 @@ public class Product {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getCompany_id() {
+        return company_id;
+    }
+
+    public void setCompany_id(String company_id) {
+        this.company_id = company_id;
     }
 
     public LocalDateTime getCreated_at() {

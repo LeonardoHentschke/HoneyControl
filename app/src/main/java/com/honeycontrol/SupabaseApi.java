@@ -8,6 +8,8 @@ import com.honeycontrol.models.Customer;
 import com.honeycontrol.requests.CustomerCreateRequest;
 import com.honeycontrol.models.Cost;
 import com.honeycontrol.requests.CostCreateRequest;
+import com.honeycontrol.models.Product;
+import com.honeycontrol.requests.ProductCreateRequest;
 import java.util.List;
 
 public interface SupabaseApi {
@@ -24,4 +26,9 @@ public interface SupabaseApi {
     ApiCall<Cost> createCost(CostCreateRequest costRequest);
     ApiCall<Cost> updateCost(String costId, CostCreateRequest costRequest);
     ApiCall<Void> deleteCost(String costId);
+    ApiCall<List<Product>> getProductsByCompany(String companyId);
+    ApiCall<Product> getProductById(String productId);
+    ApiCall<Product> createProduct(ProductCreateRequest productRequest);
+    ApiCall<Product> updateProduct(String productId, ProductCreateRequest productRequest);
+    ApiCall<Void> deleteProduct(String productId);
 }

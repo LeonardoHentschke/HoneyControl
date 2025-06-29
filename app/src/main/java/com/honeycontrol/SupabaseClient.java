@@ -21,6 +21,7 @@ import com.honeycontrol.requests.CompanyCreateRequest;
 import com.honeycontrol.requests.UserCreateRequest;
 import com.honeycontrol.requests.CustomerCreateRequest;
 import com.honeycontrol.requests.CostCreateRequest;
+import com.honeycontrol.requests.ProductCreateRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -309,6 +310,45 @@ public class SupabaseClient {
         public ApiCall<Void> deleteCost(String costId) {
             return callback -> {
                 String endpoint = "costs?id=eq." + costId;
+                executeRequest(endpoint, "DELETE", null, Void.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<List<Product>> getProductsByCompany(String companyId) {
+            return callback -> {
+                String endpoint = "products?company_id=eq." + companyId + "&select=*";
+                Type listType = new TypeToken<List<Product>>(){}.getType();
+                executeRequest(endpoint, "GET", null, listType, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Product> getProductById(String productId) {
+            return callback -> {
+                String endpoint = "products?id=eq." + productId + "&select=*";
+                executeRequest(endpoint, "GET", null, Product.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Product> createProduct(ProductCreateRequest productRequest) {
+            return callback -> executeRequest("products", "POST", productRequest,
+                    Product.class, callback);
+        }
+
+        @Override
+        public ApiCall<Product> updateProduct(String productId, ProductCreateRequest productRequest) {
+            return callback -> {
+                String endpoint = "products?id=eq." + productId;
+                executeRequest(endpoint, "PATCH", productRequest, Product.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Void> deleteProduct(String productId) {
+            return callback -> {
+                String endpoint = "products?id=eq." + productId;
                 executeRequest(endpoint, "DELETE", null, Void.class, callback);
             };
         }
