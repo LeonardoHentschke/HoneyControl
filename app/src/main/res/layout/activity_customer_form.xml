@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/neutral_900"
-    android:fillViewport="true"
     tools:context=".forms.CustomerFormActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -171,7 +175,6 @@
                 android:id="@+id/cityInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:hint="Cidade"
                 app:boxBackgroundColor="@color/neutral_800"
                 app:boxStrokeColor="@color/amber_400"
@@ -190,16 +193,6 @@
 
         </LinearLayout>
 
-        <!-- Loading indicator -->
-        <ProgressBar
-            android:id="@+id/loadingProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
-            android:indeterminateTint="@color/amber_400"
-            android:visibility="gone" />
-
         <!-- Botão Salvar -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
@@ -217,3 +210,24 @@
     </LinearLayout>
 
 </ScrollView>
+
+    <!-- Loading indicator overlay -->
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:id="@+id/loadingProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/amber_400" />
+
+    </FrameLayout>
+
+</FrameLayout>
