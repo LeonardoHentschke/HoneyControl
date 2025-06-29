@@ -1,13 +1,19 @@
 package com.honeycontrol.forms;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,23 +29,29 @@ import com.honeycontrol.utils.UserSession;
 import com.honeycontrol.models.Sale;
 import com.honeycontrol.models.Customer;
 import com.honeycontrol.models.Product;
+import com.honeycontrol.models.TempSaleItem;
 import com.honeycontrol.models.User;
 import com.honeycontrol.utils.SessionUtils;
+import com.honeycontrol.adapters.SaleItemAdapter;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class SaleFormActivity extends BaseActivity {
+public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.OnSaleItemClickListener {
     
     private static final String TAG = "SaleFormActivity";
     
     private TextInputLayout customerInputLayout;
     private AutoCompleteTextView customerAutoComplete;
     private RecyclerView saleItemsRecyclerView;
+    private LinearLayout emptyItemsLayout;
     private MaterialButton addItemButton;
     private MaterialButton backButton;
     private MaterialButton saveButton;
     private ProgressBar loadingProgressBar;
+    private TextView totalTextView;
     
     private SupabaseApi supabaseApi;
     private Sale editingSale;
@@ -48,7 +60,13 @@ public class SaleFormActivity extends BaseActivity {
     
     private List<Customer> customers = new ArrayList<>();
     private List<Product> products = new ArrayList<>();
+    private List<TempSaleItem> saleItems = new ArrayList<>();
+    
     private ArrayAdapter<String> customerAdapter;
+    private ArrayAdapter<String> productAdapter;
+    private SaleItemAdapter saleItemAdapter;
+    
+    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +103,7 @@ public class SaleFormActivity extends BaseActivity {
         }
         
         setupCustomerDropdown();
+        setupProductDropdown();
         loadCustomers();
         loadProducts();
         
@@ -97,13 +116,22 @@ public class SaleFormActivity extends BaseActivity {
         customerInputLayout = findViewById(R.id.customerInputLayout);
         customerAutoComplete = findViewById(R.id.customerAutoComplete);
         saleItemsRecyclerView = findViewById(R.id.saleItemsRecyclerView);
+        emptyItemsLayout = findViewById(R.id.emptyItemsLayout);
         addItemButton = findViewById(R.id.addItemButton);
         backButton = findViewById(R.id.backButton);
         saveButton = findViewById(R.id.saveButton);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
+        totalTextView = findViewById(R.id.totalTextView);
         
-        // Setup RecyclerView
+        // Setup RecyclerView para itens da venda
+        saleItemAdapter = new SaleItemAdapter(this, saleItems);
+        saleItemAdapter.setOnSaleItemClickListener(this);
         saleItemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        saleItemsRecyclerView.setAdapter(saleItemAdapter);
+        
+        // Inicializar estado da UI
+        updateEmptyState();
+        updateTotal();
         
         // Atualizar textos baseado no modo
         if (isEditMode) {
@@ -126,10 +154,7 @@ public class SaleFormActivity extends BaseActivity {
             }
         });
         
-        addItemButton.setOnClickListener(v -> {
-            // TODO: Implementar adição de itens à venda
-            Toast.makeText(this, "Funcionalidade de adicionar itens em desenvolvimento", Toast.LENGTH_SHORT).show();
-        });
+        addItemButton.setOnClickListener(v -> showAddItemDialog());
     }
     
     private void setupCustomerDropdown() {
@@ -137,6 +162,12 @@ public class SaleFormActivity extends BaseActivity {
         customerAdapter = new ArrayAdapter<>(this, 
             android.R.layout.simple_dropdown_item_1line, customerNames);
         customerAutoComplete.setAdapter(customerAdapter);
+    }
+    
+    private void setupProductDropdown() {
+        List<String> productNames = new ArrayList<>();
+        productAdapter = new ArrayAdapter<>(this, 
+            android.R.layout.simple_dropdown_item_1line, productNames);
     }
     
     private void loadCustomers() {
@@ -181,6 +212,17 @@ public class SaleFormActivity extends BaseActivity {
                 if (productList != null) {
                     products.clear();
                     products.addAll(productList);
+                    
+                    // Atualizar adapter de produtos
+                    List<String> productNames = new ArrayList<>();
+                    for (Product product : products) {
+                        productNames.add(product.getName());
+                    }
+                    
+                    productAdapter.clear();
+                    productAdapter.addAll(productNames);
+                    productAdapter.notifyDataSetChanged();
+                    
                     Log.d(TAG, "Produtos carregados: " + products.size());
                 }
             }
@@ -232,9 +274,230 @@ public class SaleFormActivity extends BaseActivity {
             customerInputLayout.setError(null);
         }
         
-        // TODO: Validar itens da venda
+        // Validar itens da venda
+        if (saleItems.isEmpty()) {
+            Toast.makeText(this, "Adicione pelo menos um item à venda", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
         
         return isValid;
+    }
+    
+    private void showAddItemDialog() {
+        if (products.isEmpty()) {
+            Toast.makeText(this, "Carregando produtos...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_sale_item, null);
+        
+        // Find views
+        TextInputLayout productInputLayout = dialogView.findViewById(R.id.productInputLayout);
+        AutoCompleteTextView productAutoComplete = dialogView.findViewById(R.id.productAutoComplete);
+        LinearLayout productInfoLayout = dialogView.findViewById(R.id.productInfoLayout);
+        TextView productPriceTextView = dialogView.findViewById(R.id.productPriceTextView);
+        TextView productStockTextView = dialogView.findViewById(R.id.productStockTextView);
+        TextInputLayout quantityInputLayout = dialogView.findViewById(R.id.quantityInputLayout);
+        TextInputEditText quantityEditText = dialogView.findViewById(R.id.quantityEditText);
+        TextInputLayout discountInputLayout = dialogView.findViewById(R.id.discountInputLayout);
+        TextInputEditText discountEditText = dialogView.findViewById(R.id.discountEditText);
+        TextView subtotalTextView = dialogView.findViewById(R.id.subtotalTextView);
+        MaterialButton cancelButton = dialogView.findViewById(R.id.cancelButton);
+        MaterialButton addButton = dialogView.findViewById(R.id.addButton);
+        
+        // Setup product dropdown
+        productAutoComplete.setAdapter(productAdapter);
+        
+        // Variables to hold selected product and calculated values
+        final Product[] selectedProduct = {null};
+        
+        // Product selection listener
+        productAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
+            String productName = (String) parent.getItemAtPosition(position);
+            selectedProduct[0] = findProductByName(productName);
+            
+            if (selectedProduct[0] != null) {
+                // Show product info
+                productInfoLayout.setVisibility(View.VISIBLE);
+                productPriceTextView.setText(CURRENCY_FORMAT.format(selectedProduct[0].getUnitPrice()));
+                productStockTextView.setText(String.valueOf(selectedProduct[0].getStockQuantity()));
+                
+                // Update stock color based on quantity
+                int stockQuantity = selectedProduct[0].getStockQuantity();
+                if (stockQuantity == 0) {
+                    productStockTextView.setTextColor(getResources().getColor(R.color.red_400));
+                } else if (stockQuantity <= 5) {
+                    productStockTextView.setTextColor(getResources().getColor(R.color.amber_400));
+                } else {
+                    productStockTextView.setTextColor(getResources().getColor(R.color.green_400));
+                }
+            }
+        });
+        
+        // Method to update subtotal
+        Runnable updateSubtotalRunnable = () -> {
+            if (selectedProduct[0] != null) {
+                try {
+                    String quantityStr = quantityEditText.getText().toString().trim();
+                    String discountStr = discountEditText.getText().toString().trim();
+                    
+                    int quantity = quantityStr.isEmpty() ? 0 : Integer.parseInt(quantityStr);
+                    float discount = discountStr.isEmpty() ? 0 : Float.parseFloat(discountStr);
+                    
+                    float unitPrice = selectedProduct[0].getUnitPrice();
+                    float subtotal = (unitPrice * quantity) - discount;
+                    subtotal = Math.max(0, subtotal);
+                    
+                    subtotalTextView.setText(CURRENCY_FORMAT.format(subtotal));
+                } catch (NumberFormatException e) {
+                    subtotalTextView.setText("R$ 0,00");
+                }
+            }
+        };
+        
+        // Text watchers for real-time subtotal calculation
+        quantityEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateSubtotalRunnable.run();
+            }
+        });
+        
+        discountEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateSubtotalRunnable.run();
+            }
+        });
+        
+        // Create dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+        
+        // Setup button listeners
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+        
+        addButton.setOnClickListener(v -> {
+            // Validate inputs
+            if (selectedProduct[0] == null) {
+                productInputLayout.setError("Selecione um produto");
+                return;
+            }
+            
+            String quantityStr = quantityEditText.getText().toString().trim();
+            if (quantityStr.isEmpty()) {
+                quantityInputLayout.setError("Informe a quantidade");
+                return;
+            }
+            
+            try {
+                int quantity = Integer.parseInt(quantityStr);
+                if (quantity <= 0) {
+                    quantityInputLayout.setError("Quantidade deve ser maior que zero");
+                    return;
+                }
+                
+                // Check stock availability
+                if (quantity > selectedProduct[0].getStockQuantity()) {
+                    quantityInputLayout.setError("Quantidade maior que o estoque disponível");
+                    return;
+                }
+                
+                // Check if product already exists in sale
+                boolean productExists = false;
+                for (TempSaleItem item : saleItems) {
+                    if (item.getProduct().getId().equals(selectedProduct[0].getId())) {
+                        Toast.makeText(SaleFormActivity.this, "Produto já adicionado à venda", Toast.LENGTH_SHORT).show();
+                        productExists = true;
+                        break;
+                    }
+                }
+                
+                if (productExists) {
+                    return;
+                }
+                
+                float discount = 0;
+                String discountStr = discountEditText.getText().toString().trim();
+                if (!discountStr.isEmpty()) {
+                    discount = Float.parseFloat(discountStr);
+                }
+                
+                // Create and add item
+                TempSaleItem newItem = new TempSaleItem(
+                    selectedProduct[0], 
+                    quantity, 
+                    selectedProduct[0].getUnitPrice(), 
+                    discount
+                );
+                
+                saleItems.add(newItem);
+                saleItemAdapter.notifyItemInserted(saleItems.size() - 1);
+                
+                updateEmptyState();
+                updateTotal();
+                
+                dialog.dismiss();
+                
+            } catch (NumberFormatException e) {
+                quantityInputLayout.setError("Quantidade inválida");
+            }
+        });
+        
+        dialog.show();
+    }
+    
+    private Product findProductByName(String name) {
+        for (Product product : products) {
+            if (product.getName().equals(name)) {
+                return product;
+            }
+        }
+        return null;
+    }
+    
+    private void updateEmptyState() {
+        if (saleItems.isEmpty()) {
+            emptyItemsLayout.setVisibility(View.VISIBLE);
+            saleItemsRecyclerView.setVisibility(View.GONE);
+        } else {
+            emptyItemsLayout.setVisibility(View.GONE);
+            saleItemsRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+    
+    private void updateTotal() {
+        float total = 0;
+        for (TempSaleItem item : saleItems) {
+            total += item.getSubtotal();
+        }
+        totalTextView.setText(CURRENCY_FORMAT.format(total));
+    }
+    
+    @Override
+    public void onRemoveItem(int position) {
+        if (position >= 0 && position < saleItems.size()) {
+            saleItems.remove(position);
+            saleItemAdapter.notifyItemRemoved(position);
+            saleItemAdapter.notifyItemRangeChanged(position, saleItems.size());
+            
+            updateEmptyState();
+            updateTotal();
+        }
     }
     
     private void createSale() {

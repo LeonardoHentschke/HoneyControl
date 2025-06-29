@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/card_background"
+    android:layout_margin="4dp"
+    android:padding="16dp">
+
+    <!-- Header com nome do produto e botão remover -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/productNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Nome do Produto"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/neutral_50"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/removeButton"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Remover"
+            android:textSize="12sp"
+            android:textColor="@color/red_400"
+            app:icon="@android:drawable/ic_menu_delete"
+            app:iconTint="@color/red_400"
+            app:iconSize="16dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="8dp" />
+
+    </LinearLayout>
+
+    <!-- Informações da linha -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Quantidade e preço unitário -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="2dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Qtd: "
+                    android:textSize="14sp"
+                    android:textColor="@color/neutral_400" />
+
+                <TextView
+                    android:id="@+id/quantityTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/neutral_50" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" × "
+                    android:textSize="14sp"
+                    android:textColor="@color/neutral_400"
+                    android:layout_marginHorizontal="4dp" />
+
+                <TextView
+                    android:id="@+id/unitPriceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="R$ 0,00"
+                    android:textSize="14sp"
+                    android:textColor="@color/neutral_50" />
+
+            </LinearLayout>
+
+            <!-- Desconto se houver -->
+            <LinearLayout
+                android:id="@+id/discountLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Desconto: "
+                    android:textSize="12sp"
+                    android:textColor="@color/neutral_400" />
+
+                <TextView
+                    android:id="@+id/discountTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="R$ 0,00"
+                    android:textSize="12sp"
+                    android:textColor="@color/red_400" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Subtotal -->
+        <TextView
+            android:id="@+id/subtotalTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="R$ 0,00"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/amber_400" />
+
+    </LinearLayout>
+
+</LinearLayout>
