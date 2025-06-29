@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class Product {
     @SerializedName("id")
-    @Expose(serialize = false)
+    @Expose
     private String id;
     
     @SerializedName("name")
@@ -19,7 +19,7 @@ public class Product {
     
     @SerializedName("unit_price")
     @Expose
-    private Float unit_price;
+    private Float unitPrice;
     
     @SerializedName("unit")
     @Expose
@@ -27,15 +27,15 @@ public class Product {
     
     @SerializedName("company_id")
     @Expose
-    private String company_id;
+    private String companyId;
     
     @SerializedName("created_at")
-    @Expose(serialize = false)
-    private LocalDateTime created_at;
+    @Expose
+    private LocalDateTime createdAt;
     
     @SerializedName("updated_at")
-    @Expose(serialize = false)
-    private LocalDateTime updated_at;
+    @Expose
+    private LocalDateTime updatedAt;
 
     private Stock stock;
     private Integer stockQuantity = 0; // Quantidade em estoque
@@ -64,12 +64,12 @@ public class Product {
         this.description = description;
     }
 
-    public Float getUnit_price() {
-        return unit_price;
+    public Float getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setUnit_price(Float unit_price) {
-        this.unit_price = unit_price;
+    public void setUnitPrice(Float unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     public String getUnit() {
@@ -80,28 +80,28 @@ public class Product {
         this.unit = unit;
     }
 
-    public String getCompany_id() {
-        return company_id;
+    public String getCompanyId() {
+        return companyId;
     }
 
-    public void setCompany_id(String company_id) {
-        this.company_id = company_id;
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdated_at() {
-        return updated_at;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(LocalDateTime updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Stock getStock() {

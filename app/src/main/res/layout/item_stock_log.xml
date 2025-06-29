@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp"
+    app:cardBackgroundColor="@color/neutral_800"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/neutral_700"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header com tipo e data -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <!-- Indicador visual do tipo -->
+            <View
+                android:id="@+id/typeIndicator"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/circle_shape"
+                android:backgroundTint="@color/green_400"
+                tools:backgroundTint="@color/green_400" />
+
+            <!-- Tipo da movimentação -->
+            <TextView
+                android:id="@+id/typeTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ENTRADA"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/green_400"
+                tools:text="ENTRADA" />
+
+            <!-- Data -->
+            <TextView
+                android:id="@+id/dateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="29/06/2025 14:30"
+                android:textSize="12sp"
+                android:textColor="@color/neutral_400"
+                tools:text="29/06/2025 14:30" />
+
+        </LinearLayout>
+
+        <!-- Quantidade -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quantidade: "
+                android:textSize="14sp"
+                android:textColor="@color/neutral_400" />
+
+            <TextView
+                android:id="@+id/quantityTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+50"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/green_400"
+                tools:text="+50" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" unidades"
+                android:textSize="14sp"
+                android:textColor="@color/neutral_400" />
+
+        </LinearLayout>
+
+        <!-- Motivo (se existir) -->
+        <TextView
+            android:id="@+id/reasonTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Motivo: Compra de estoque inicial"
+            android:textSize="13sp"
+            android:textColor="@color/neutral_300"
+            android:visibility="gone"
+            tools:text="Motivo: Compra de estoque inicial"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

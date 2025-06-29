@@ -5,17 +5,27 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.honeycontrol.adapters.StockLogAdapter;
 import com.honeycontrol.models.Product;
+import com.honeycontrol.models.Stock;
+import com.honeycontrol.models.StockLog;
 import com.honeycontrol.models.User;
 import com.honeycontrol.requests.ProductCreateRequest;
 import com.honeycontrol.utils.SessionUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ProductFormActivity extends BaseActivity {
@@ -33,6 +43,14 @@ public class ProductFormActivity extends BaseActivity {
     private MaterialButton backButton;
     private MaterialButton saveButton;
     private ProgressBar loadingProgressBar;
+    
+    // Stock history views
+    private LinearLayout stockHistorySection;
+    private TextView stockHistoryCount;
+    private ProgressBar stockHistoryLoadingProgressBar;
+    private RecyclerView stockHistoryRecyclerView;
+    private LinearLayout emptyStockHistoryLayout;
+    private StockLogAdapter stockLogAdapter;
     
     private SupabaseApi supabaseApi;
     private Product editingProduct;
@@ -77,6 +95,18 @@ public class ProductFormActivity extends BaseActivity {
         backButton = findViewById(R.id.backButton);
         saveButton = findViewById(R.id.saveButton);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
+        
+        // Initialize stock history views
+        stockHistorySection = findViewById(R.id.stockHistorySection);
+        stockHistoryCount = findViewById(R.id.stockHistoryCount);
+        stockHistoryLoadingProgressBar = findViewById(R.id.stockHistoryLoadingProgressBar);
+        stockHistoryRecyclerView = findViewById(R.id.stockHistoryRecyclerView);
+        emptyStockHistoryLayout = findViewById(R.id.emptyStockHistoryLayout);
+        
+        // Setup RecyclerView
+        stockHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        stockLogAdapter = new StockLogAdapter(this, new ArrayList<>());
+        stockHistoryRecyclerView.setAdapter(stockLogAdapter);
         
         // Inicializa API
         supabaseApi = SupabaseClient.createService(SupabaseApi.class);
@@ -168,8 +198,14 @@ public class ProductFormActivity extends BaseActivity {
     private void populateFormWithProductData(Product product) {
         nameEditText.setText(product.getName());
         descriptionEditText.setText(product.getDescription() != null ? product.getDescription() : "");
-        unitPriceEditText.setText(product.getUnit_price() != null ? String.valueOf(product.getUnit_price()) : "");
+        unitPriceEditText.setText(product.getUnitPrice() != null ? String.valueOf(product.getUnitPrice()) : "");
         unitAutoComplete.setText(product.getUnit() != null ? product.getUnit() : "");
+        
+        // Show stock history section when in edit mode
+        if (isEditMode) {
+            stockHistorySection.setVisibility(View.VISIBLE);
+            loadStockHistory();
+        }
     }
 
     private boolean validateInputs() {
@@ -300,5 +336,83 @@ public class ProductFormActivity extends BaseActivity {
     private void showLoading(boolean show) {
         loadingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         saveButton.setEnabled(!show);
+    }
+    
+    private void loadStockHistory() {
+        if (editingProduct == null || editingProduct.getId() == null) {
+            showEmptyStockHistory();
+            return;
+        }
+        
+        showStockHistoryLoading(true);
+
+        supabaseApi.getStockByProductId(editingProduct.getId()).enqueue(new ApiCallback<>() {
+            @Override
+            public void onSuccess(List<Stock> stocks, int statusCode) {
+                if (stocks != null && !stocks.isEmpty()) {
+                    Stock stock = stocks.get(0);
+                    // Now get the stock logs for this stock
+                    loadStockLogs(stock.getId());
+                } else {
+                    showStockHistoryLoading(false);
+                    showEmptyStockHistory();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                showStockHistoryLoading(false);
+                Log.e(TAG, "Erro ao carregar estoque: " + e.getMessage());
+                showEmptyStockHistory();
+            }
+        });
+    }
+    
+    private void loadStockLogs(String stockId) {
+        supabaseApi.getStockLogsByStockId(stockId).enqueue(new ApiCallback<>() {
+            @Override
+            public void onSuccess(List<StockLog> stockLogs, int statusCode) {
+                showStockHistoryLoading(false);
+                if (stockLogs != null && !stockLogs.isEmpty()) {
+                    updateStockHistoryCount(stockLogs.size());
+                    stockLogAdapter.updateStockLogs(stockLogs);
+                    showStockHistoryList();
+                } else {
+                    showEmptyStockHistory();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                showStockHistoryLoading(false);
+                Log.e(TAG, "Erro ao carregar histórico de estoque: " + e.getMessage());
+                Toast.makeText(ProductFormActivity.this, "Erro ao carregar histórico de movimentações", Toast.LENGTH_SHORT).show();
+                showEmptyStockHistory();
+            }
+        });
+    }
+    
+    private void showStockHistoryLoading(boolean show) {
+        stockHistoryLoadingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        stockHistoryRecyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+        emptyStockHistoryLayout.setVisibility(View.GONE);
+    }
+    
+    private void showStockHistoryList() {
+        stockHistoryLoadingProgressBar.setVisibility(View.GONE);
+        stockHistoryRecyclerView.setVisibility(View.VISIBLE);
+        emptyStockHistoryLayout.setVisibility(View.GONE);
+    }
+    
+    private void showEmptyStockHistory() {
+        stockHistoryLoadingProgressBar.setVisibility(View.GONE);
+        stockHistoryRecyclerView.setVisibility(View.GONE);
+        emptyStockHistoryLayout.setVisibility(View.VISIBLE);
+        updateStockHistoryCount(0);
+    }
+    
+    private void updateStockHistoryCount(int count) {
+        String countText = count == 1 ? "1 movimentação" : count + " movimentações";
+        stockHistoryCount.setText(countText);
     }
 }

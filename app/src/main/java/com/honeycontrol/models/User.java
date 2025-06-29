@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class User {
     @SerializedName("id")
-    @Expose(serialize = false)
+    @Expose
     private String id;
     @SerializedName("name")
     @Expose
@@ -18,10 +18,10 @@ public class User {
     @Expose
     private String password_hash;
     @SerializedName("created_at")
-    @Expose(serialize = false)
+    @Expose
     private LocalDateTime created_at;
     @SerializedName("updated_at")
-    @Expose(serialize = false)
+    @Expose
     private LocalDateTime updated_at;
     @SerializedName("company_id")
     @Expose

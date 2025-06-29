@@ -1,16 +1,41 @@
 package com.honeycontrol.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Sale {
+    @SerializedName("id")
+    @Expose
     private String id;
-    private String company_id;
-    private String customer_id;
-    private String user_id;
+    
+    @SerializedName("company_id")
+    @Expose
+    private String companyId;
+    
+    @SerializedName("customer_id")
+    @Expose
+    private String customerId;
+    
+    @SerializedName("user_id")
+    @Expose
+    private String userId;
+    
+    @SerializedName("total")
+    @Expose
     private Float total;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    
+    @SerializedName("created_at")
+    @Expose
+    private LocalDateTime createdAt;
+    
+    @SerializedName("updated_at")
+    @Expose
+    private LocalDateTime updatedAt;
+    
+    @SerializedName("sale_items")
+    @Expose
     private List<SaleItem> saleItems;
 
     public String getId() {
@@ -21,28 +46,28 @@ public class Sale {
         this.id = id;
     }
 
-    public String getCompany_id() {
-        return company_id;
+    public String getCompanyId() {
+        return companyId;
     }
 
-    public void setCompany_id(String company_id) {
-        this.company_id = company_id;
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
     }
 
-    public String getCustomer_id() {
-        return customer_id;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer_id(String customer_id) {
-        this.customer_id = customer_id;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
-    public String getUser_id() {
-        return user_id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Float getTotal() {
@@ -53,20 +78,20 @@ public class Sale {
         this.total = total;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdated_at() {
-        return updated_at;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(LocalDateTime updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public List<SaleItem> getSaleItems() {

@@ -19,11 +19,11 @@ public class Stock {
     private Integer quantity;
     
     @SerializedName("created_at")
-    @Expose(serialize = false)
+    @Expose
     private LocalDateTime created_at;
     
     @SerializedName("updated_at")
-    @Expose(serialize = false)
+    @Expose
     private LocalDateTime updated_at;
     
     private Product product;

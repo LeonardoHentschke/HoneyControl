@@ -1,17 +1,48 @@
 package com.honeycontrol.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import java.time.LocalDateTime;
 
 public class SaleItem {
+    @SerializedName("id")
+    @Expose
     private String id;
-    private String sale_id;
-    private String product_id;
+    
+    @SerializedName("sale_id")
+    @Expose
+    private String saleId;
+    
+    @SerializedName("product_id")
+    @Expose
+    private String productId;
+    
+    @SerializedName("quantity")
+    @Expose
     private Integer quantity;
-    private Float unit_price;
+    
+    @SerializedName("unit_price")
+    @Expose
+    private Float unitPrice;
+    
+    @SerializedName("subtotal")
+    @Expose
     private Float subtotal;
+    
+    @SerializedName("discount")
+    @Expose
     private Float discount;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    
+    @SerializedName("created_at")
+    @Expose
+    private LocalDateTime createdAt;
+    
+    @SerializedName("updated_at")
+    @Expose
+    private LocalDateTime updatedAt;
+    
+    @SerializedName("product")
+    @Expose
     private Product product;
 
     public String getId() {
@@ -22,20 +53,20 @@ public class SaleItem {
         this.id = id;
     }
 
-    public String getSale_id() {
-        return sale_id;
+    public String getSaleId() {
+        return saleId;
     }
 
-    public void setSale_id(String sale_id) {
-        this.sale_id = sale_id;
+    public void setSaleId(String saleId) {
+        this.saleId = saleId;
     }
 
-    public String getProduct_id() {
-        return product_id;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProduct_id(String product_id) {
-        this.product_id = product_id;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public Integer getQuantity() {
@@ -46,12 +77,12 @@ public class SaleItem {
         this.quantity = quantity;
     }
 
-    public Float getUnit_price() {
-        return unit_price;
+    public Float getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setUnit_price(Float unit_price) {
-        this.unit_price = unit_price;
+    public void setUnitPrice(Float unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     public Float getSubtotal() {
@@ -70,20 +101,20 @@ public class SaleItem {
         this.discount = discount;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdated_at() {
-        return updated_at;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(LocalDateTime updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Product getProduct() {

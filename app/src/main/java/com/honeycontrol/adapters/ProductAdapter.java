@@ -52,7 +52,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         
         // Format price as currency
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
-        holder.priceTextView.setText(currencyFormat.format(product.getUnit_price()));
+        holder.priceTextView.setText(currencyFormat.format(product.getUnitPrice()));
         
         // Exibir quantidade em estoque
         Integer stockQuantity = product.getStockQuantity();

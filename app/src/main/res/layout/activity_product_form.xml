@@ -177,6 +177,108 @@
             app:icon="@android:drawable/ic_menu_save"
             app:iconTint="@color/neutral_900" />
 
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/neutral_700" />
+
+        <!-- Histórico de Movimentações -->
+        <LinearLayout
+            android:id="@+id/stockHistorySection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Header do histórico -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Histórico de Movimentações"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/amber_400" />
+
+                <TextView
+                    android:id="@+id/stockHistoryCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 movimentações"
+                    android:textSize="12sp"
+                    android:textColor="@color/neutral_400" />
+
+            </LinearLayout>
+
+            <!-- Loading do histórico -->
+            <ProgressBar
+                android:id="@+id/stockHistoryLoadingProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="24dp"
+                android:indeterminateTint="@color/amber_400"
+                android:visibility="gone" />
+
+            <!-- Lista de movimentações -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/stockHistoryRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"
+                tools:listitem="@layout/item_stock_log" />
+
+            <!-- Estado vazio -->
+            <LinearLayout
+                android:id="@+id/emptyStockHistoryLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    android:alpha="0.3"
+                    app:tint="@color/neutral_400" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nenhuma movimentação registrada"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/neutral_400"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="As movimentações de estoque aparecerão aqui após salvar o produto"
+                    android:textSize="14sp"
+                    android:textColor="@color/neutral_500"
+                    android:textAlignment="center"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

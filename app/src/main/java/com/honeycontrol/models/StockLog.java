@@ -1,15 +1,38 @@
 package com.honeycontrol.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.time.LocalDateTime;
 
 public class StockLog {
+    @SerializedName("id")
+    @Expose
     private String id;
-    private String stock_id;
+
+    @SerializedName("stock_id")
+    @Expose
+    private String stockId;
+
+    @SerializedName("quantity")
+    @Expose
     private Integer quantity;
+
+    @SerializedName("type")
+    @Expose
     private String type;
+
+    @SerializedName("reason")
+    @Expose
     private String reason;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+
+    @SerializedName("created_at")
+    @Expose
+    private LocalDateTime createdAt;
+
+    @SerializedName("updatedAt")
+    @Expose
+    private LocalDateTime updatedAt;
 
     public String getId() {
         return id;
@@ -19,12 +42,12 @@ public class StockLog {
         this.id = id;
     }
 
-    public String getStock_id() {
-        return stock_id;
+    public String getStockId() {
+        return stockId;
     }
 
-    public void setStock_id(String stock_id) {
-        this.stock_id = stock_id;
+    public void setStockId(String stockId) {
+        this.stockId = stockId;
     }
 
     public Integer getQuantity() {
@@ -51,19 +74,19 @@ public class StockLog {
         this.reason = reason;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdated_at() {
-        return updated_at;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(LocalDateTime updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
