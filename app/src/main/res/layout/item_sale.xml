@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/card_background"
+    android:layout_margin="8dp"
+    android:padding="16dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <!-- Header com cliente e valor total -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/saleCustomerTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cliente da Venda"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/neutral_50"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/saleTotalTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="R$ 0,00"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/amber_400"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+
+    <!-- Data da venda -->
+    <TextView
+        android:id="@+id/saleDateTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="29/06/2025 14:30"
+        android:textSize="14sp"
+        android:textColor="@color/amber_300"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Quantidade de itens -->
+    <TextView
+        android:id="@+id/saleItemsCountTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="5 itens vendidos"
+        android:textSize="14sp"
+        android:textColor="@color/neutral_300"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+</LinearLayout>

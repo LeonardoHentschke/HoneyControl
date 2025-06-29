@@ -12,6 +12,7 @@ import com.honeycontrol.models.Product;
 import com.honeycontrol.requests.ProductCreateRequest;
 import com.honeycontrol.models.Stock;
 import com.honeycontrol.models.StockLog;
+import com.honeycontrol.models.Sale;
 import com.honeycontrol.requests.StockCreateRequest;
 import com.honeycontrol.requests.StockUpdateRequest;
 import com.honeycontrol.requests.StockLogCreateRequest;
@@ -43,4 +44,6 @@ public interface SupabaseApi {
     ApiCall<Stock> createStock(StockCreateRequest stockRequest);
     ApiCall<Stock> updateStock(String stockId, StockUpdateRequest stockRequest);
     ApiCall<StockLog> createStockLog(StockLogCreateRequest stockLogRequest);
+    ApiCall<List<Sale>> getSalesByCompany(String companyId);
+    ApiCall<Sale> getSaleById(String saleId);
 }

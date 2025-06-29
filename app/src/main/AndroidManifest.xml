@@ -69,6 +69,11 @@
             android:exported="false"
             android:parentActivityName=".ProductsActivity" />
 
+        <activity
+            android:name=".forms.SaleFormActivity"
+            android:exported="false"
+            android:parentActivityName=".SalesActivity" />
+
     </application>
 
 </manifest>

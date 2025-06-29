@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/neutral_900"
+    tools:context=".forms.SaleFormActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="48dp"
+            android:paddingBottom="24dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
+
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="32dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Nova Venda"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/amber_400" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/backButton"
+                    style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:text="Voltar"
+                    android:textSize="14sp"
+                    app:strokeColor="@color/neutral_400"
+                    android:textColor="@color/neutral_400"
+                    app:cornerRadius="12dp"
+                    app:icon="@android:drawable/ic_menu_revert"
+                    app:iconTint="@color/neutral_400" />
+
+            </LinearLayout>
+
+            <!-- Form Fields -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="32dp">
+
+                <!-- Cliente -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/customerInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:boxBackgroundColor="@color/neutral_800"
+                    app:boxBackgroundMode="filled"
+                    app:boxCornerRadiusBottomEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:hintTextColor="@color/amber_400"
+                    app:boxStrokeColor="@color/amber_400"
+                    android:hint="Cliente *"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/customerAutoComplete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:textColor="@color/neutral_50"
+                        android:textColorHint="@color/neutral_400" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@color/neutral_700" />
+
+                <!-- Seção de Itens -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Itens da Venda"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/amber_400" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/addItemButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="Adicionar Item"
+                        android:textSize="12sp"
+                        app:backgroundTint="@color/amber_400"
+                        app:cornerRadius="8dp"
+                        android:textColor="@color/neutral_900"
+                        app:icon="@android:drawable/ic_input_add"
+                        app:iconTint="@color/neutral_900" />
+
+                </LinearLayout>
+
+                <!-- Lista de itens da venda -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/saleItemsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:nestedScrollingEnabled="false"
+                    android:minHeight="100dp" />
+
+                <!-- Estado vazio para itens -->
+                <LinearLayout
+                    android:id="@+id/emptyItemsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="32dp"
+                    android:background="@color/neutral_800"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_input_add"
+                        android:layout_marginBottom="12dp"
+                        android:alpha="0.3"
+                        app:tint="@color/neutral_400" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nenhum item adicionado"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/neutral_400"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Adicione produtos à venda"
+                        android:textSize="12sp"
+                        android:textColor="@color/neutral_500"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+                <!-- Total da venda -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@color/neutral_800"
+                    android:padding="16dp"
+                    android:layout_marginBottom="24dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Total da Venda:"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/neutral_50" />
+
+                    <TextView
+                        android:id="@+id/totalTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="R$ 0,00"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/amber_400" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Botão Salvar -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Salvar Venda"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/amber_400"
+                app:cornerRadius="12dp"
+                android:textColor="@color/neutral_900"
+                app:icon="@android:drawable/ic_menu_save"
+                app:iconTint="@color/neutral_900" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Loading indicator overlay -->
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:id="@+id/loadingProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/amber_400" />
+
+    </FrameLayout>
+
+</FrameLayout>

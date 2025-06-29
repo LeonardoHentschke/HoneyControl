@@ -464,6 +464,23 @@ public class SupabaseClient {
             return callback -> executeRequest("stock_logs", "POST", stockLogRequest,
                     StockLog.class, callback);
         }
+
+        @Override
+        public ApiCall<List<Sale>> getSalesByCompany(String companyId) {
+            return callback -> {
+                String endpoint = "sales?company_id=eq." + companyId + "&select=*,sale_items(*)&order=created_at.desc";
+                Type listType = new TypeToken<List<Sale>>(){}.getType();
+                executeRequest(endpoint, "GET", null, listType, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<Sale> getSaleById(String saleId) {
+            return callback -> {
+                String endpoint = "sales?id=eq." + saleId + "&select=*,sale_items(*)";
+                executeRequest(endpoint, "GET", null, Sale.class, callback);
+            };
+        }
     }
 
     public static class HttpException extends Exception {
