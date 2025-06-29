@@ -3,7 +3,6 @@ package com.honeycontrol;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.button.MaterialButton;
@@ -13,6 +12,7 @@ import com.honeycontrol.models.Companies;
 import com.honeycontrol.requests.CompanyCreateRequest;
 import com.honeycontrol.models.User;
 import com.honeycontrol.requests.UserCreateRequest;
+import com.honeycontrol.services.ApiCallback;
 import com.honeycontrol.services.ApiService;
 import com.honeycontrol.viewmodels.SignupWizardViewModel;
 

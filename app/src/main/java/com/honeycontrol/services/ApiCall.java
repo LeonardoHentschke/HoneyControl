@@ -1,4 +1,4 @@
-package com.honeycontrol;
+package com.honeycontrol.services;
 
 public interface ApiCall<T> {
 

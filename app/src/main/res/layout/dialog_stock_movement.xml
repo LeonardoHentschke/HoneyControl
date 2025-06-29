@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/neutral_800">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Movimentar Estoque"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/amber_400"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Tipo de movimentação -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/movementTypeInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/amber_400"
+        app:hintTextColor="@color/amber_400"
+        android:hint="Tipo de Movimentação"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+        <AutoCompleteTextView
+            android:id="@+id/movementTypeAutoComplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:textColor="@color/neutral_50"
+            android:textColorHint="@color/neutral_400" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Quantidade -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/quantityInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:boxStrokeColor="@color/amber_400"
+        app:hintTextColor="@color/amber_400"
+        android:hint="Quantidade">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/quantityEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textColor="@color/neutral_50"
+            android:textColorHint="@color/neutral_400" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Motivo -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/reasonInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:boxStrokeColor="@color/amber_400"
+        app:hintTextColor="@color/amber_400"
+        android:hint="Motivo (opcional)">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/reasonEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:textColor="@color/neutral_50"
+            android:textColorHint="@color/neutral_400" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Informações do estoque atual -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/neutral_700"
+        android:padding="12dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Estoque atual: "
+            android:textColor="@color/neutral_300"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/currentStockTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/amber_400"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" unidades"
+            android:textColor="@color/neutral_300"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- Botões -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancelar"
+            android:textColor="@color/neutral_400"
+            app:backgroundTint="@android:color/transparent"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_marginEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/confirmButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Confirmar"
+            app:backgroundTint="@color/amber_400"
+            android:textColor="@color/neutral_900" />
+
+    </LinearLayout>
+
+</LinearLayout>

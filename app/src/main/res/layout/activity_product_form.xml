@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/neutral_900"
-    android:fillViewport="true"
-    tools:context=".ProductFormActivity">
+    tools:context=".forms.ProductFormActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -281,4 +285,19 @@
 
     </LinearLayout>
 
-</ScrollView>
+    </ScrollView>
+
+    <!-- FAB para movimentar estoque -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/moveStockFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_menu_manage"
+        app:backgroundTint="@color/amber_400"
+        app:tint="@color/neutral_900"
+        android:visibility="gone"
+        android:contentDescription="Movimentar Estoque" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

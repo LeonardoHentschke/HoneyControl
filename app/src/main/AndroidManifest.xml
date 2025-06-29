@@ -55,17 +55,17 @@
             android:parentActivityName=".DashboardActivity" />
 
         <activity
-            android:name=".CustomerFormActivity"
+            android:name=".forms.CustomerFormActivity"
             android:exported="false"
             android:parentActivityName=".CustomersActivity" />
 
         <activity
-            android:name=".CostFormActivity"
+            android:name=".forms.CostFormActivity"
             android:exported="false"
             android:parentActivityName=".CostsActivity" />
 
         <activity
-            android:name=".ProductFormActivity"
+            android:name=".forms.ProductFormActivity"
             android:exported="false"
             android:parentActivityName=".ProductsActivity" />
 

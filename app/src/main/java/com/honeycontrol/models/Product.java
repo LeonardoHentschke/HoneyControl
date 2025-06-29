@@ -38,7 +38,7 @@ public class Product {
     private LocalDateTime updatedAt;
 
     private Stock stock;
-    private Integer stockQuantity = 0; // Quantidade em estoque
+    private Integer stockQuantity = 0;
 
     public String getId() {
         return id;

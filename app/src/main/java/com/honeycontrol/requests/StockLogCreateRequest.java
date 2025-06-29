@@ -1,42 +1,30 @@
-package com.honeycontrol.models;
+package com.honeycontrol.requests;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.time.LocalDateTime;
-
-public class StockLog {
-    @SerializedName("id")
-    private String id;
-
+public class StockLogCreateRequest {
     @SerializedName("stock_id")
     @Expose
     private String stockId;
-
+    
     @SerializedName("quantity")
     @Expose
     private Integer quantity;
-
+    
     @SerializedName("type")
     @Expose
     private String type;
-
+    
     @SerializedName("reason")
     @Expose
     private String reason;
 
-    @SerializedName("created_at")
-    private LocalDateTime createdAt;
-
-    @SerializedName("updated_at")
-    private LocalDateTime updatedAt;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public StockLogCreateRequest(String stockId, Integer quantity, String type, String reason) {
+        this.stockId = stockId;
+        this.quantity = quantity;
+        this.type = type;
+        this.reason = reason;
     }
 
     public String getStockId() {
@@ -71,19 +59,13 @@ public class StockLog {
         this.reason = reason;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    @Override
+    public String toString() {
+        return "StockLogCreateRequest{" +
+                "stockId='" + stockId + '\'' +
+                ", quantity=" + quantity +
+                ", type='" + type + '\'' +
+                ", reason='" + reason + '\'' +
+                '}';
     }
 }

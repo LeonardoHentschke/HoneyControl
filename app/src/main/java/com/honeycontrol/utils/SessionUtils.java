@@ -1,7 +1,5 @@
 package com.honeycontrol.utils;
 
-import com.honeycontrol.UserSession;
-
 public class SessionUtils {
 
     public static boolean isUserLoggedIn() {

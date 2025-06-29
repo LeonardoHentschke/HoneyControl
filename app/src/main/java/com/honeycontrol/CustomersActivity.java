@@ -1,7 +1,6 @@
 package com.honeycontrol;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,14 +14,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.honeycontrol.adapters.CustomerAdapter;
+import com.honeycontrol.forms.CustomerFormActivity;
 import com.honeycontrol.models.Customer;
 import com.honeycontrol.models.User;
-import com.honeycontrol.requests.CustomerCreateRequest;
+import com.honeycontrol.services.ApiCallback;
+import com.honeycontrol.services.SupabaseApi;
+import com.honeycontrol.services.SupabaseClient;
 import com.honeycontrol.utils.SessionUtils;
+import com.honeycontrol.utils.UserSession;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class CustomersActivity extends BaseActivity implements CustomerAdapter.OnCustomerClickListener {
     

@@ -1,14 +1,14 @@
-package com.honeycontrol;
+package com.honeycontrol.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+
+import com.honeycontrol.services.ApiCallback;
+import com.honeycontrol.services.SupabaseApi;
+import com.honeycontrol.services.SupabaseClient;
 import com.honeycontrol.models.User;
 
-/**
- * Singleton para gerenciar a sessão do usuário logado na aplicação.
- * Armazena os dados do usuário em memória para evitar consultas desnecessárias ao banco.
- */
 public class UserSession {
     
     private static final String TAG = "UserSession";
@@ -22,36 +22,24 @@ public class UserSession {
     private UserSession() {
         // Construtor privado para implementar Singleton
     }
-    
-    /**
-     * Obtém a instância única da sessão do usuário
-     */
+
     public static synchronized UserSession getInstance() {
         if (instance == null) {
             instance = new UserSession();
         }
         return instance;
     }
-    
-    /**
-     * Define o usuário logado na sessão
-     */
+
     public void setCurrentUser(User user) {
         this.currentUser = user;
         this.isUserLoaded = true;
         Log.d(TAG, "Usuário definido na sessão: " + (user != null ? user.getName() : "null"));
     }
-    
-    /**
-     * Obtém o usuário atual da sessão
-     */
+
     public User getCurrentUser() {
         return currentUser;
     }
-    
-    /**
-     * Verifica se há um usuário logado
-     */
+
     public boolean isUserLoggedIn() {
         boolean hasUser = currentUser != null;
         boolean isLoaded = isUserLoaded;
@@ -62,38 +50,23 @@ public class UserSession {
         }
         return hasUser && isLoaded;
     }
-    
-    /**
-     * Obtém o company_id do usuário logado
-     */
+
     public String getCurrentUserCompanyId() {
         return currentUser != null ? currentUser.getCompanyId() : null;
     }
-    
-    /**
-     * Obtém o nome do usuário logado
-     */
+
     public String getCurrentUserName() {
         return currentUser != null ? currentUser.getName() : null;
     }
-    
-    /**
-     * Obtém o email do usuário logado
-     */
+
     public String getCurrentUserEmail() {
         return currentUser != null ? currentUser.getEmail() : null;
     }
-    
-    /**
-     * Obtém o ID do usuário logado
-     */
+
     public String getCurrentUserId() {
         return currentUser != null ? currentUser.getId() : null;
     }
-    
-    /**
-     * Carrega o usuário da sessão usando o email armazenado nas preferências
-     */
+
     public void loadUserFromPreferences(Context context, UserLoadCallback callback) {
         Log.d(TAG, "loadUserFromPreferences() iniciado");
         
@@ -146,19 +119,13 @@ public class UserSession {
             }
         });
     }
-    
-    /**
-     * Salva o email do usuário nas preferências (usado no login)
-     */
+
     public void saveUserEmail(Context context, String email) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         prefs.edit().putString(USER_EMAIL_KEY, email).apply();
         Log.d(TAG, "Email do usuário salvo nas preferências: " + email);
     }
-    
-    /**
-     * Limpa a sessão do usuário (usado no logout)
-     */
+
     public void clearSession(Context context) {
         currentUser = null;
         isUserLoaded = false;
@@ -169,10 +136,7 @@ public class UserSession {
         
         Log.d(TAG, "Sessão do usuário limpa");
     }
-    
-    /**
-     * Interface para callback de carregamento do usuário
-     */
+
     public interface UserLoadCallback {
         void onUserLoaded(User user);
         void onLoadFailed(String error);

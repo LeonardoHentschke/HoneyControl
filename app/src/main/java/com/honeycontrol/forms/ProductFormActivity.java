@@ -1,7 +1,8 @@
-package com.honeycontrol;
+package com.honeycontrol.forms;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -10,18 +11,29 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.honeycontrol.services.ApiCallback;
+import com.honeycontrol.BaseActivity;
+import com.honeycontrol.R;
+import com.honeycontrol.services.SupabaseApi;
+import com.honeycontrol.services.SupabaseClient;
+import com.honeycontrol.utils.UserSession;
 import com.honeycontrol.adapters.StockLogAdapter;
 import com.honeycontrol.models.Product;
 import com.honeycontrol.models.Stock;
 import com.honeycontrol.models.StockLog;
 import com.honeycontrol.models.User;
 import com.honeycontrol.requests.ProductCreateRequest;
+import com.honeycontrol.requests.StockCreateRequest;
+import com.honeycontrol.requests.StockUpdateRequest;
+import com.honeycontrol.requests.StockLogCreateRequest;
 import com.honeycontrol.utils.SessionUtils;
 
 import java.util.ArrayList;
@@ -43,6 +55,7 @@ public class ProductFormActivity extends BaseActivity {
     private MaterialButton backButton;
     private MaterialButton saveButton;
     private ProgressBar loadingProgressBar;
+    private FloatingActionButton moveStockFab;
     
     // Stock history views
     private LinearLayout stockHistorySection;
@@ -54,6 +67,7 @@ public class ProductFormActivity extends BaseActivity {
     
     private SupabaseApi supabaseApi;
     private Product editingProduct;
+    private Stock currentStock;
     private boolean isEditMode = false;
     private String productId = "";
     
@@ -95,6 +109,7 @@ public class ProductFormActivity extends BaseActivity {
         backButton = findViewById(R.id.backButton);
         saveButton = findViewById(R.id.saveButton);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
+        moveStockFab = findViewById(R.id.moveStockFab);
         
         // Initialize stock history views
         stockHistorySection = findViewById(R.id.stockHistorySection);
@@ -131,6 +146,8 @@ public class ProductFormActivity extends BaseActivity {
                 }
             }
         });
+        
+        moveStockFab.setOnClickListener(v -> showStockMovementDialog());
     }
     
     private void setupUnitDropdown() {
@@ -350,12 +367,14 @@ public class ProductFormActivity extends BaseActivity {
             @Override
             public void onSuccess(List<Stock> stocks, int statusCode) {
                 if (stocks != null && !stocks.isEmpty()) {
-                    Stock stock = stocks.get(0);
+                    currentStock = stocks.get(0);
                     // Now get the stock logs for this stock
-                    loadStockLogs(stock.getId());
+                    loadStockLogs(currentStock.getId());
+                    // Show FAB when stock exists
+                    moveStockFab.setVisibility(View.VISIBLE);
                 } else {
-                    showStockHistoryLoading(false);
-                    showEmptyStockHistory();
+                    // Create initial stock with 0 quantity
+                    createInitialStock();
                 }
             }
 
@@ -414,5 +433,164 @@ public class ProductFormActivity extends BaseActivity {
     private void updateStockHistoryCount(int count) {
         String countText = count == 1 ? "1 movimentação" : count + " movimentações";
         stockHistoryCount.setText(countText);
+    }
+    
+    private void createInitialStock() {
+        if (editingProduct == null) return;
+        
+        StockCreateRequest stockRequest = new StockCreateRequest(editingProduct.getId(), 0);
+        supabaseApi.createStock(stockRequest).enqueue(new ApiCallback<Stock>() {
+            @Override
+            public void onSuccess(Stock stock, int statusCode) {
+                currentStock = stock;
+                moveStockFab.setVisibility(View.VISIBLE);
+                showStockHistoryLoading(false);
+                showEmptyStockHistory();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Erro ao criar estoque inicial: " + e.getMessage());
+                showStockHistoryLoading(false);
+                showEmptyStockHistory();
+            }
+        });
+    }
+    
+    private void showStockMovementDialog() {
+        if (currentStock == null) {
+            Toast.makeText(this, "Estoque não encontrado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_stock_movement, null);
+        
+        // Find views
+        AutoCompleteTextView movementTypeAutoComplete = dialogView.findViewById(R.id.movementTypeAutoComplete);
+        TextInputEditText quantityEditText = dialogView.findViewById(R.id.quantityEditText);
+        TextInputEditText reasonEditText = dialogView.findViewById(R.id.reasonEditText);
+        TextView currentStockTextView = dialogView.findViewById(R.id.currentStockTextView);
+        MaterialButton cancelButton = dialogView.findViewById(R.id.cancelButton);
+        MaterialButton confirmButton = dialogView.findViewById(R.id.confirmButton);
+        
+        // Setup movement type dropdown
+        String[] movementTypes = {"ENTRADA", "SAIDA", "AJUSTE"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, 
+            android.R.layout.simple_dropdown_item_1line, movementTypes);
+        movementTypeAutoComplete.setAdapter(adapter);
+        
+        // Show current stock
+        currentStockTextView.setText(String.valueOf(currentStock.getQuantity()));
+        
+        // Create dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+            
+        // Setup button listeners
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+        
+        confirmButton.setOnClickListener(v -> {
+            String movementType = movementTypeAutoComplete.getText().toString().trim();
+            String quantityStr = quantityEditText.getText().toString().trim();
+            String reason = reasonEditText.getText().toString().trim();
+            
+            if (movementType.isEmpty()) {
+                Toast.makeText(this, "Selecione o tipo de movimentação", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            if (quantityStr.isEmpty()) {
+                Toast.makeText(this, "Informe a quantidade", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            try {
+                int quantity = Integer.parseInt(quantityStr);
+                if (quantity <= 0) {
+                    Toast.makeText(this, "Quantidade deve ser maior que zero", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                // Calculate new stock quantity
+                int currentQuantity = currentStock.getQuantity();
+                int newQuantity;
+                
+                switch (movementType) {
+                    case "ENTRADA":
+                    case "AJUSTE":
+                        newQuantity = currentQuantity + quantity;
+                        break;
+                    case "SAIDA":
+                        newQuantity = currentQuantity - quantity;
+                        if (newQuantity < 0) {
+                            Toast.makeText(this, "Estoque insuficiente", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        break;
+                    default:
+                        Toast.makeText(this, "Tipo de movimentação inválido", Toast.LENGTH_SHORT).show();
+                        return;
+                }
+                
+                dialog.dismiss();
+                processStockMovement(movementType, quantity, newQuantity, reason);
+                
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Quantidade inválida", Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        dialog.show();
+    }
+    
+    private void processStockMovement(String movementType, int quantity, int newQuantity, String reason) {
+        // Update stock quantity
+        StockUpdateRequest stockUpdate = new StockUpdateRequest(newQuantity);
+        supabaseApi.updateStock(currentStock.getId(), stockUpdate).enqueue(new ApiCallback<>() {
+            @Override
+            public void onSuccess(Stock updatedStock, int statusCode) {
+                currentStock = updatedStock;
+
+                // Create stock log
+                StockLogCreateRequest logRequest = new StockLogCreateRequest(
+                        currentStock.getId(),
+                        quantity,
+                        movementType,
+                        reason.isEmpty() ? null : reason
+                );
+
+                supabaseApi.createStockLog(logRequest).enqueue(new ApiCallback<>() {
+                    @Override
+                    public void onSuccess(StockLog stockLog, int statusCode) {
+                        Toast.makeText(ProductFormActivity.this,
+                                "Movimentação registrada com sucesso", Toast.LENGTH_SHORT).show();
+
+                        // Update product stock quantity for display
+                        if (editingProduct != null) {
+                            editingProduct.setStockQuantity(newQuantity);
+                        }
+
+                        // Reload stock history
+                        loadStockHistory();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e(TAG, "Erro ao criar log de estoque: " + e.getMessage());
+                        Toast.makeText(ProductFormActivity.this,
+                                "Erro ao registrar movimentação", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Erro ao atualizar estoque: " + e.getMessage());
+                Toast.makeText(ProductFormActivity.this,
+                        "Erro ao atualizar estoque", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

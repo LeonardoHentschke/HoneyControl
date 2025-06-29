@@ -7,24 +7,21 @@ import java.util.List;
 
 public class Stock {
     @SerializedName("id")
-    @Expose
-    private String id;
+    private transient String id;
     
     @SerializedName("product_id")
     @Expose
-    private String product_id;
+    private String productId;
     
     @SerializedName("quantity")
     @Expose
     private Integer quantity;
     
     @SerializedName("created_at")
-    @Expose
-    private LocalDateTime created_at;
+    private transient LocalDateTime createdAt;
     
     @SerializedName("updated_at")
-    @Expose
-    private LocalDateTime updated_at;
+    private transient LocalDateTime updatedAt;
     
     private Product product;
     private List<StockLog> stockLogs;
@@ -37,12 +34,12 @@ public class Stock {
         this.id = id;
     }
 
-    public String getProduct_id() {
-        return product_id;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProduct_id(String product_id) {
-        this.product_id = product_id;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public Integer getQuantity() {
@@ -53,20 +50,20 @@ public class Stock {
         this.quantity = quantity;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdated_at() {
-        return updated_at;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(LocalDateTime updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Product getProduct() {

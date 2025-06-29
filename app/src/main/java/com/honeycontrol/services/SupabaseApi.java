@@ -1,4 +1,4 @@
-package com.honeycontrol;
+package com.honeycontrol.services;
 
 import com.honeycontrol.models.Companies;
 import com.honeycontrol.requests.CompanyCreateRequest;
@@ -12,6 +12,10 @@ import com.honeycontrol.models.Product;
 import com.honeycontrol.requests.ProductCreateRequest;
 import com.honeycontrol.models.Stock;
 import com.honeycontrol.models.StockLog;
+import com.honeycontrol.requests.StockCreateRequest;
+import com.honeycontrol.requests.StockUpdateRequest;
+import com.honeycontrol.requests.StockLogCreateRequest;
+
 import java.util.List;
 
 public interface SupabaseApi {
@@ -36,4 +40,7 @@ public interface SupabaseApi {
     ApiCall<Void> deleteProduct(String productId);
     ApiCall<List<Stock>> getStockByProductId(String productId);
     ApiCall<List<StockLog>> getStockLogsByStockId(String stockId);
+    ApiCall<Stock> createStock(StockCreateRequest stockRequest);
+    ApiCall<Stock> updateStock(String stockId, StockUpdateRequest stockRequest);
+    ApiCall<StockLog> createStockLog(StockLogCreateRequest stockLogRequest);
 }

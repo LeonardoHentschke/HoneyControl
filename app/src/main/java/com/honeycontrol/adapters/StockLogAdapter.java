@@ -41,9 +41,9 @@ public class StockLogAdapter extends RecyclerView.Adapter<StockLogAdapter.StockL
         
         // Configurar cores baseado no tipo
         int color;
-        if ("ENTRADA".equals(type) || "IN".equals(type)) {
+        if ("ENTRADA".equalsIgnoreCase(type) || "IN".equalsIgnoreCase(type)) {
             color = ContextCompat.getColor(context, R.color.green_400);
-        } else if ("SAIDA".equals(type) || "OUT".equals(type)) {
+        } else if ("SAIDA".equalsIgnoreCase(type) || "OUT".equalsIgnoreCase(type)) {
             color = ContextCompat.getColor(context, R.color.red_400);
         } else {
             color = ContextCompat.getColor(context, R.color.amber_400);
@@ -59,7 +59,7 @@ public class StockLogAdapter extends RecyclerView.Adapter<StockLogAdapter.StockL
         String quantityText;
         int quantityColor;
         
-        if ("ENTRADA".equals(type) || "IN".equals(type)) {
+        if ("ENTRADA".equalsIgnoreCase(type) || "IN".equalsIgnoreCase(type)) {
             quantityText = "+" + quantity;
             quantityColor = ContextCompat.getColor(context, R.color.green_400);
         } else {

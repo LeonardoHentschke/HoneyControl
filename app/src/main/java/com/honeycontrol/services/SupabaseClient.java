@@ -1,4 +1,4 @@
-package com.honeycontrol;
+package com.honeycontrol.services;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
@@ -22,6 +22,9 @@ import com.honeycontrol.requests.UserCreateRequest;
 import com.honeycontrol.requests.CustomerCreateRequest;
 import com.honeycontrol.requests.CostCreateRequest;
 import com.honeycontrol.requests.ProductCreateRequest;
+import com.honeycontrol.requests.StockCreateRequest;
+import com.honeycontrol.requests.StockUpdateRequest;
+import com.honeycontrol.requests.StockLogCreateRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -365,7 +368,7 @@ public class SupabaseClient {
                         for (Product product : products) {
                             Integer stockQuantity = 0;
                             for (Stock stock : stockList) {
-                                if (product.getId().equals(stock.getProduct_id())) {
+                                if (product.getId().equals(stock.getProductId())) {
                                     stockQuantity = stock.getQuantity();
                                     product.setStock(stock);
                                     break;
@@ -440,6 +443,26 @@ public class SupabaseClient {
                 Type listType = new TypeToken<List<StockLog>>(){}.getType();
                 executeRequest(endpoint, "GET", null, listType, callback);
             };
+        }
+
+        @Override
+        public ApiCall<Stock> createStock(StockCreateRequest stockRequest) {
+            return callback -> executeRequest("stocks", "POST", stockRequest,
+                    Stock.class, callback);
+        }
+
+        @Override
+        public ApiCall<Stock> updateStock(String stockId, StockUpdateRequest stockRequest) {
+            return callback -> {
+                String endpoint = "stocks?id=eq." + stockId;
+                executeRequest(endpoint, "PATCH", stockRequest, Stock.class, callback);
+            };
+        }
+
+        @Override
+        public ApiCall<StockLog> createStockLog(StockLogCreateRequest stockLogRequest) {
+            return callback -> executeRequest("stock_logs", "POST", stockLogRequest,
+                    StockLog.class, callback);
         }
     }
 
