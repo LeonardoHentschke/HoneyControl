@@ -62,6 +62,9 @@ public class StockLogAdapter extends RecyclerView.Adapter<StockLogAdapter.StockL
         if ("ENTRADA".equalsIgnoreCase(type) || "IN".equalsIgnoreCase(type)) {
             quantityText = "+" + quantity;
             quantityColor = ContextCompat.getColor(context, R.color.green_400);
+        } else if ("AJUSTE".equalsIgnoreCase(type)) {
+            quantityText = "+" + quantity;
+            quantityColor = ContextCompat.getColor(context, R.color.amber_400);
         } else {
             quantityText = "-" + Math.abs(quantity);
             quantityColor = ContextCompat.getColor(context, R.color.red_400);

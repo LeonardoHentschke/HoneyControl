@@ -7,14 +7,9 @@
     android:background="@color/neutral_900"
     tools:context=".forms.ProductFormActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingTop="48dp"
         android:paddingBottom="24dp"
@@ -137,7 +132,6 @@
                 android:id="@+id/unitInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
                 android:hint="Unidade"
                 app:boxBackgroundColor="@color/neutral_800"
                 app:boxStrokeColor="@color/amber_400"
@@ -156,16 +150,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
-
-        <!-- Loading -->
-        <ProgressBar
-            android:id="@+id/loadingProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
-            android:indeterminateTint="@color/amber_400"
-            android:visibility="gone" />
 
         <!-- Botão salvar -->
         <com.google.android.material.button.MaterialButton
@@ -193,7 +177,8 @@
         <LinearLayout
             android:id="@+id/stockHistorySection"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:visibility="gone">
 
@@ -234,58 +219,72 @@
                 android:indeterminateTint="@color/amber_400"
                 android:visibility="gone" />
 
-            <!-- Lista de movimentações -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/stockHistoryRecyclerView"
+            <!-- ScrollView apenas para o conteúdo do histórico -->
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:clipToPadding="false"
-                tools:listitem="@layout/item_stock_log" />
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fillViewport="true">
 
-            <!-- Estado vazio -->
-            <LinearLayout
-                android:id="@+id/emptyStockHistoryLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="32dp"
-                android:visibility="visible">
-
-                <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_marginBottom="16dp"
-                    android:src="@android:drawable/ic_menu_sort_by_size"
-                    android:alpha="0.3"
-                    app:tint="@color/neutral_400" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Nenhuma movimentação registrada"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/neutral_400"
-                    android:layout_marginBottom="8dp" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="As movimentações de estoque aparecerão aqui após salvar o produto"
-                    android:textSize="14sp"
-                    android:textColor="@color/neutral_500"
-                    android:textAlignment="center"
-                    android:gravity="center" />
+                    <!-- Lista de movimentações -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/stockHistoryRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:clipToPadding="false"
+                        tools:listitem="@layout/item_stock_log" />
 
-            </LinearLayout>
+                    <!-- Estado vazio -->
+                    <LinearLayout
+                        android:id="@+id/emptyStockHistoryLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="32dp"
+                        android:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_marginBottom="16dp"
+                            android:src="@android:drawable/ic_menu_sort_by_size"
+                            android:alpha="0.3"
+                            app:tint="@color/neutral_400" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nenhuma movimentação registrada"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/neutral_400"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="As movimentações de estoque aparecerão aqui após salvar o produto"
+                            android:textSize="14sp"
+                            android:textColor="@color/neutral_500"
+                            android:textAlignment="center"
+                            android:gravity="center" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </ScrollView>
 
         </LinearLayout>
 
     </LinearLayout>
-
-    </ScrollView>
 
     <!-- FAB para movimentar estoque -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -293,11 +292,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_margin="24dp"
         android:src="@android:drawable/ic_menu_manage"
         app:backgroundTint="@color/amber_400"
         app:tint="@color/neutral_900"
         android:visibility="gone"
         android:contentDescription="Movimentar Estoque" />
+
+    <!-- Loading overlay - cobrindo toda a tela -->
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:id="@+id/loadingProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/amber_400" />
+
+    </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

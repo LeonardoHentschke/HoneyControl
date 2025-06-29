@@ -7,7 +7,8 @@ import java.util.List;
 
 public class Stock {
     @SerializedName("id")
-    private transient String id;
+    @Expose
+    private String id;
     
     @SerializedName("product_id")
     @Expose
@@ -18,11 +19,13 @@ public class Stock {
     private Integer quantity;
     
     @SerializedName("created_at")
-    private transient LocalDateTime createdAt;
+    @Expose
+    private LocalDateTime createdAt;
     
     @SerializedName("updated_at")
-    private transient LocalDateTime updatedAt;
-    
+    @Expose
+    private LocalDateTime updatedAt;
+
     private Product product;
     private List<StockLog> stockLogs;
 

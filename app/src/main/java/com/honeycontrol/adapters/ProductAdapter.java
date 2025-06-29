@@ -17,7 +17,7 @@ import java.util.Locale;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     
     private List<Product> products;
-    private Context context;
+    private final Context context;
     private OnProductClickListener onProductClickListener;
     
     public interface OnProductClickListener {
@@ -49,34 +49,30 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.nameTextView.setText(product.getName());
         holder.descriptionTextView.setText(product.getDescription() != null ? product.getDescription() : "Sem descrição");
         holder.unitTextView.setText(product.getUnit() != null ? product.getUnit() : "un");
-        
-        // Format price as currency
+
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
         holder.priceTextView.setText(currencyFormat.format(product.getUnitPrice()));
-        
-        // Exibir quantidade em estoque
+
         Integer stockQuantity = product.getStockQuantity();
         holder.stockQuantityTextView.setText(String.valueOf(stockQuantity));
-        
-        // Definir cor do estoque baseado na quantidade
+
         if (stockQuantity == 0) {
-            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
-            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, R.color.red_400));
+            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, R.color.red_400));
         } else if (stockQuantity <= 5) {
-            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark));
-            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_orange_dark));
+            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, R.color.amber_400));
+            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, R.color.amber_400));
         } else {
-            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark));
-            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark));
+            holder.stockQuantityTextView.setTextColor(ContextCompat.getColor(context, R.color.green_400));
+            holder.stockLabelTextView.setTextColor(ContextCompat.getColor(context, R.color.green_400));
         }
-        
-        // Click listeners
+
         holder.itemView.setOnClickListener(v -> {
             if (onProductClickListener != null) {
                 onProductClickListener.onProductClick(product);
             }
         });
-        
+
         holder.itemView.setOnLongClickListener(v -> {
             if (onProductClickListener != null) {
                 onProductClickListener.onProductEdit(product);
