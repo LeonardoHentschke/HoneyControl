@@ -37,6 +37,10 @@ public class Sale {
     @SerializedName("sale_items")
     @Expose
     private List<SaleItem> saleItems;
+    
+    @SerializedName("customers")
+    @Expose
+    private Customer customer;
 
     public String getId() {
         return id;
@@ -100,5 +104,13 @@ public class Sale {
 
     public void setSaleItems(List<SaleItem> saleItems) {
         this.saleItems = saleItems;
+    }
+    
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }

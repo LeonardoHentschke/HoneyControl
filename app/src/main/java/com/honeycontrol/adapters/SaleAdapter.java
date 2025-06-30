@@ -47,11 +47,14 @@ public class SaleAdapter extends RecyclerView.Adapter<SaleAdapter.SaleViewHolder
     public void onBindViewHolder(@NonNull SaleViewHolder holder, int position) {
         Sale sale = sales.get(position);
         
-        // TODO: Implementar busca do nome do cliente por ID
-        // Por enquanto vamos mostrar "Cliente" + ID
-        String customerName = sale.getCustomerId() != null ? 
-            "Cliente " + sale.getCustomerId().substring(0, Math.min(8, sale.getCustomerId().length())) : 
-            "Cliente não informado";
+        // Exibir nome do cliente ao invés do ID
+        String customerName = "Cliente não informado";
+        if (sale.getCustomer() != null && sale.getCustomer().getName() != null) {
+            customerName = sale.getCustomer().getName();
+        } else if (sale.getCustomerId() != null) {
+            // Fallback caso não tenha carregado o relacionamento
+            customerName = "Cliente " + sale.getCustomerId().substring(0, Math.min(8, sale.getCustomerId().length()));
+        }
         holder.customerTextView.setText(customerName);
         
         // Format total as currency

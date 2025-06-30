@@ -470,7 +470,7 @@ public class SupabaseClient {
         @Override
         public ApiCall<List<Sale>> getSalesByCompany(String companyId) {
             return callback -> {
-                String endpoint = "sales?company_id=eq." + companyId + "&select=*,sale_items(*)&order=created_at.desc";
+                String endpoint = "sales?company_id=eq." + companyId + "&select=*,sale_items(*),customers(name)&order=created_at.desc";
                 Type listType = new TypeToken<List<Sale>>(){}.getType();
                 executeRequest(endpoint, "GET", null, listType, callback);
             };
