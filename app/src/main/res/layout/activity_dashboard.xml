@@ -292,7 +292,7 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp"
             app:cardBackgroundColor="@color/neutral_800"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="32dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -325,6 +325,115 @@
                     android:text="Produtos em estoque: 0"
                     android:textSize="16sp"
                     android:textColor="@color/neutral_50" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Gráficos -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Análise dos Dados"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/neutral_50"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Gráfico de Vendas -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/neutral_800"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vendas dos Últimos 7 Dias"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/amber_400"
+                    android:layout_marginBottom="16dp" />
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/salesChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Gráfico de Pizza - Distribuição de Custos -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/neutral_800"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Distribuição de Custos por Categoria"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/amber_400"
+                    android:layout_marginBottom="16dp" />
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/costsChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Gráfico de Barras - Produtos em Estoque -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/neutral_800"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Estoque de Produtos"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/amber_400"
+                    android:layout_marginBottom="16dp" />
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/stockChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
 
             </LinearLayout>
 

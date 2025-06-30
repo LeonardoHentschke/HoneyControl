@@ -40,6 +40,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
     implementation("androidx.fragment:fragment:1.6.2")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
