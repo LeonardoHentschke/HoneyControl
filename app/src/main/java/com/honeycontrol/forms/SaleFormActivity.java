@@ -22,6 +22,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.honeycontrol.models.StockLog;
 import com.honeycontrol.requests.StockLogCreateRequest;
+import com.honeycontrol.requests.StockCreateRequest;
 import com.honeycontrol.services.ApiCallback;
 import com.honeycontrol.BaseActivity;
 import com.honeycontrol.R;
@@ -546,16 +547,12 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
         supabaseApi.createSale(saleRequest).enqueue(new ApiCallback<>() {
             @Override
             public void onSuccess(Sale sale, int statusCode) {
-                Log.d(TAG, "Venda criada com sucesso: " + sale.getId());
-                
-                // Agora criar os itens da venda
                 createSaleItems(sale.getId());
             }
             
             @Override
             public void onFailure(Exception e) {
                 showLoading(false);
-                Log.e(TAG, "Erro ao criar venda: " + e.getMessage());
                 Toast.makeText(SaleFormActivity.this, "Erro ao criar venda: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -565,7 +562,7 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
         final int totalItems = saleItems.size();
         final int[] itemsCreated = {0};
         final boolean[] hasError = {false};
-        
+
         // Criar cada item da venda
         for (TempSaleItem tempItem : saleItems) {
             SaleItemCreateRequest itemRequest = new SaleItemCreateRequest(
@@ -611,10 +608,10 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
         // Atualizar estoque de cada produto
         for (TempSaleItem tempItem : saleItems) {
             Product product = tempItem.getProduct();
-            int newQuantity = product.getStockQuantity() - tempItem.getQuantity();
             
             // Criar log de saída do estoque
-            if (product.getStock() != null) {
+            if (product.getStock() != null && product.getStock().getId() != null) {
+                // Produto já tem estoque cadastrado
                 StockLogCreateRequest logRequest = new StockLogCreateRequest(
                     product.getStock().getId(),
                     -tempItem.getQuantity(),
@@ -648,8 +645,9 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
                     }
                 });
             } else {
-                // Se não tem estoque cadastrado, apenas conta como processado
+                // Se não tem estoque cadastrado ou ID do stock é null, apenas conta como processado
                 productsUpdated[0]++;
+                Log.w(TAG, "Produto " + product.getName() + " não possui estoque cadastrado ou ID do stock é null");
                 if (productsUpdated[0] == totalProducts && !hasError[0]) {
                     showLoading(false);
                     Toast.makeText(SaleFormActivity.this, "Venda criada com sucesso!", Toast.LENGTH_SHORT).show();

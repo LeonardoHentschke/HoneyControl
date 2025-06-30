@@ -359,7 +359,7 @@ public class SupabaseClient {
                 productIds.append(products.get(i).getId());
             }
 
-            String stockEndpoint = "stocks?product_id=in.(" + productIds + ")&select=product_id,quantity";
+            String stockEndpoint = "stocks?product_id=in.(" + productIds + ")&select=id,product_id,quantity";
             Type stockListType = new TypeToken<List<Stock>>(){}.getType();
             
             executeRequest(stockEndpoint, "GET", null, stockListType, new ApiCallback<List<Stock>>() {
