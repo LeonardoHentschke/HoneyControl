@@ -20,9 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.honeycontrol.models.Stock;
 import com.honeycontrol.models.StockLog;
 import com.honeycontrol.requests.StockLogCreateRequest;
 import com.honeycontrol.requests.StockCreateRequest;
+import com.honeycontrol.requests.StockUpdateRequest;
 import com.honeycontrol.services.ApiCallback;
 import com.honeycontrol.BaseActivity;
 import com.honeycontrol.R;
@@ -609,28 +611,62 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
         for (TempSaleItem tempItem : saleItems) {
             Product product = tempItem.getProduct();
             
-            // Criar log de saída do estoque
+            // Verificar se produto tem estoque cadastrado
             if (product.getStock() != null && product.getStock().getId() != null) {
-                // Produto já tem estoque cadastrado
-                StockLogCreateRequest logRequest = new StockLogCreateRequest(
-                    product.getStock().getId(),
-                    -tempItem.getQuantity(),
-                    "SAIDA",
-                    "Venda - Item vendido"
-                );
+                // Calcular nova quantidade do estoque
+                int currentQuantity = product.getStockQuantity();
+                int newQuantity = currentQuantity - tempItem.getQuantity();
                 
-                supabaseApi.createStockLog(logRequest).enqueue(new ApiCallback<>() {
+                // Validar se há estoque suficiente
+                if (newQuantity < 0) {
+                    if (!hasError[0]) {
+                        hasError[0] = true;
+                        showLoading(false);
+                        Log.e(TAG, "Estoque insuficiente para produto: " + product.getName());
+                        Toast.makeText(SaleFormActivity.this, "Estoque insuficiente para o produto: " + product.getName(), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    continue;
+                }
+                
+                // Primeiro: Atualizar a quantidade do estoque
+                StockUpdateRequest stockUpdate = new StockUpdateRequest(newQuantity);
+                supabaseApi.updateStock(product.getStock().getId(), stockUpdate).enqueue(new ApiCallback<>() {
                     @Override
-                    public void onSuccess(StockLog stockLog, int statusCode) {
-                        productsUpdated[0]++;
-                        Log.d(TAG, "Estoque atualizado: " + productsUpdated[0] + "/" + totalProducts);
+                    public void onSuccess(Stock updatedStock, int statusCode) {
+                        // Segundo: Criar log de saída do estoque
+                        StockLogCreateRequest logRequest = new StockLogCreateRequest(
+                            product.getStock().getId(),
+                            -tempItem.getQuantity(), // Quantidade negativa para indicar saída
+                            "SAIDA",
+                            "Venda - Item vendido"
+                        );
+                        
+                        supabaseApi.createStockLog(logRequest).enqueue(new ApiCallback<>() {
+                            @Override
+                            public void onSuccess(StockLog stockLog, int statusCode) {
+                                productsUpdated[0]++;
+                                Log.d(TAG, "Estoque atualizado: " + productsUpdated[0] + "/" + totalProducts);
 
-                        // Verificar se todos os produtos foram atualizados
-                        if (productsUpdated[0] == totalProducts && !hasError[0]) {
-                            showLoading(false);
-                            Toast.makeText(SaleFormActivity.this, "Venda criada com sucesso!", Toast.LENGTH_SHORT).show();
-                            finish(); // Voltar para a tela anterior
-                        }
+                                // Verificar se todos os produtos foram atualizados
+                                if (productsUpdated[0] == totalProducts && !hasError[0]) {
+                                    showLoading(false);
+                                    Toast.makeText(SaleFormActivity.this, "Venda criada com sucesso!", Toast.LENGTH_SHORT).show();
+                                    finish(); // Voltar para a tela anterior
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                if (!hasError[0]) {
+                                    hasError[0] = true;
+                                    showLoading(false);
+                                    Log.e(TAG, "Erro ao criar log de estoque: " + e.getMessage());
+                                    Toast.makeText(SaleFormActivity.this, "Venda criada, mas houve erro ao registrar movimentação de estoque", Toast.LENGTH_LONG).show();
+                                    finish();
+                                }
+                            }
+                        });
                     }
 
                     @Override
@@ -638,7 +674,7 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
                         if (!hasError[0]) {
                             hasError[0] = true;
                             showLoading(false);
-                            Log.e(TAG, "Erro ao atualizar estoque: " + e.getMessage());
+                            Log.e(TAG, "Erro ao atualizar quantidade do estoque: " + e.getMessage());
                             Toast.makeText(SaleFormActivity.this, "Venda criada, mas houve erro ao atualizar estoque", Toast.LENGTH_LONG).show();
                             finish();
                         }
