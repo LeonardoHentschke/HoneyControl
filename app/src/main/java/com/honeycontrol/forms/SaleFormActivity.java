@@ -30,12 +30,10 @@ import com.honeycontrol.BaseActivity;
 import com.honeycontrol.R;
 import com.honeycontrol.services.SupabaseApi;
 import com.honeycontrol.services.SupabaseClient;
-import com.honeycontrol.utils.UserSession;
 import com.honeycontrol.models.Sale;
 import com.honeycontrol.models.Customer;
 import com.honeycontrol.models.Product;
 import com.honeycontrol.models.TempSaleItem;
-import com.honeycontrol.models.User;
 import com.honeycontrol.models.SaleItem;
 import com.honeycontrol.utils.SessionUtils;
 import com.honeycontrol.adapters.SaleItemAdapter;
@@ -65,11 +63,11 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
     private Sale editingSale;
     private boolean isEditMode = false;
     private String saleId = "";
+    private Customer selectedCustomer = null;
     
-    private List<Customer> customers = new ArrayList<>();
-    private List<Product> products = new ArrayList<>();
-    private List<TempSaleItem> saleItems = new ArrayList<>();
-    
+    private final List<Customer> customers = new ArrayList<>();
+    private final List<Product> products = new ArrayList<>();
+    private final List<TempSaleItem> saleItems = new ArrayList<>();
     private ArrayAdapter<String> customerAdapter;
     private ArrayAdapter<String> productAdapter;
     private SaleItemAdapter saleItemAdapter;
@@ -513,7 +511,7 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
         
         // Buscar customer ID pelo nome selecionado
         String customerName = customerAutoComplete.getText().toString().trim();
-        Customer selectedCustomer = null;
+        selectedCustomer = null;
         for (Customer customer : customers) {
             if (customer.getName().equals(customerName)) {
                 selectedCustomer = customer;
@@ -635,11 +633,12 @@ public class SaleFormActivity extends BaseActivity implements SaleItemAdapter.On
                     @Override
                     public void onSuccess(Stock updatedStock, int statusCode) {
                         // Segundo: Criar log de saída do estoque
+                        String customerName = selectedCustomer != null ? selectedCustomer.getName() : "Cliente não identificado";
                         StockLogCreateRequest logRequest = new StockLogCreateRequest(
                             product.getStock().getId(),
-                            -tempItem.getQuantity(), // Quantidade negativa para indicar saída
+                            -tempItem.getQuantity(),
                             "SAIDA",
-                            "Venda - Item vendido"
+                            "Venda - Item vendido para " + customerName
                         );
                         
                         supabaseApi.createStockLog(logRequest).enqueue(new ApiCallback<>() {
