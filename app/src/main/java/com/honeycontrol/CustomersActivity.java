@@ -2,12 +2,14 @@ package com.honeycontrol;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,8 +25,15 @@ import com.honeycontrol.services.SupabaseClient;
 import com.honeycontrol.utils.SessionUtils;
 import com.honeycontrol.utils.UserSession;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class CustomersActivity extends BaseActivity implements CustomerAdapter.OnCustomerClickListener {
     
@@ -32,6 +41,7 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     
     private MaterialButton backToDashboardButton;
     private FloatingActionButton addCustomerFab;
+    private FloatingActionButton exportCsvFab;
     private RecyclerView customersRecyclerView;
     private LinearLayout emptyStateLayout;
     private ProgressBar loadingProgressBar;
@@ -78,6 +88,7 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     private void initViews() {
         backToDashboardButton = findViewById(R.id.backToDashboardButton);
         addCustomerFab = findViewById(R.id.addCustomerFab);
+        exportCsvFab = findViewById(R.id.exportCsvFab);
         customersRecyclerView = findViewById(R.id.customersRecyclerView);
         emptyStateLayout = findViewById(R.id.emptyStateLayout);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
@@ -102,6 +113,8 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
             Intent intent = new Intent(this, CustomerFormActivity.class);
             startActivity(intent);
         });
+        
+        exportCsvFab.setOnClickListener(v -> exportCustomersToCSV());
     }
     
     private void loadCurrentUser() {
@@ -237,5 +250,113 @@ public class CustomersActivity extends BaseActivity implements CustomerAdapter.O
     @Override
     public void onCustomerDelete(Customer customer) {
         Toast.makeText(this, "Função de excluir em desenvolvimento", Toast.LENGTH_SHORT).show();
+    }
+    
+    private void exportCustomersToCSV() {
+        if (customers.isEmpty()) {
+            Toast.makeText(this, "Não há clientes para exportar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        try {
+            // Criar o arquivo CSV no diretório de Downloads
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            String fileName = "clientes_honeycontrol_" + timestamp + ".csv";
+            
+            // Para Android 10+ (API 29+), usar scoped storage
+            File csvFile;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                // Usar o diretório de Downloads público
+                csvFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+            } else {
+                // Para versões anteriores, usar o diretório externo
+                csvFile = new File(Environment.getExternalStorageDirectory() + "/Download", fileName);
+            }
+            
+            // Garantir que o diretório existe
+            csvFile.getParentFile().mkdirs();
+            
+            FileWriter writer = new FileWriter(csvFile);
+            
+            // Escrever o cabeçalho do CSV
+            writer.append("ID,Nome,Email,Telefone,Documento,Endereço,Cidade,Data de Criação\n");
+            
+            // Escrever os dados dos clientes
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            
+            for (Customer customer : customers) {
+                writer.append(escapeCSV(customer.getId())).append(",");
+                writer.append(escapeCSV(customer.getName())).append(",");
+                writer.append(escapeCSV(customer.getEmail())).append(",");
+                writer.append(escapeCSV(customer.getPhone())).append(",");
+                writer.append(escapeCSV(customer.getDocument() != null ? customer.getDocument() : "")).append(",");
+                writer.append(escapeCSV(customer.getAddress() != null ? customer.getAddress() : "")).append(",");
+                writer.append(escapeCSV(customer.getCity() != null ? customer.getCity() : "")).append(",");
+                
+                String createdAt = "";
+                if (customer.getCreated_at() != null) {
+                    createdAt = customer.getCreated_at().format(formatter);
+                }
+                writer.append(escapeCSV(createdAt)).append("\n");
+            }
+            
+            writer.flush();
+            writer.close();
+            
+            // Mostrar mensagem de sucesso
+            String message = "Arquivo CSV exportado com sucesso!\n" + 
+                           "Total de clientes: " + customers.size() + "\n" + 
+                           "Local: Downloads/" + fileName;
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            
+            Log.d(TAG, "CSV exportado: " + csvFile.getAbsolutePath());
+            
+            // Opcional: Abrir o arquivo ou compartilhar
+            shareCSVFile(csvFile);
+            
+        } catch (IOException e) {
+            Log.e(TAG, "Erro ao exportar CSV: " + e.getMessage());
+            Toast.makeText(this, "Erro ao exportar arquivo CSV: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Erro inesperado ao exportar CSV: " + e.getMessage());
+            Toast.makeText(this, "Erro inesperado ao exportar arquivo: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+    
+    private String escapeCSV(String value) {
+        if (value == null) {
+            return "";
+        }
+        
+        // Escapar aspas duplas duplicando-as e envolver em aspas se necessário
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            value = "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        
+        return value;
+    }
+    
+    private void shareCSVFile(File csvFile) {
+        try {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/csv");
+            
+            // Usar FileProvider para Android 7.0+
+            android.net.Uri csvUri = FileProvider.getUriForFile(
+                this,
+                "com.honeycontrol.fileprovider",
+                csvFile
+            );
+            
+            shareIntent.putExtra(Intent.EXTRA_STREAM, csvUri);
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Lista de Clientes - HoneyControl");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Arquivo CSV com a lista de clientes exportada do HoneyControl.");
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            
+            startActivity(Intent.createChooser(shareIntent, "Compartilhar arquivo CSV"));
+        } catch (Exception e) {
+            Log.e(TAG, "Erro ao compartilhar arquivo: " + e.getMessage());
+            // Não mostrar erro, pois o arquivo já foi salvo com sucesso
+        }
     }
 }

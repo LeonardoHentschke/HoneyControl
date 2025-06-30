@@ -118,4 +118,17 @@
         app:backgroundTint="@color/amber_400"
         app:tint="@color/neutral_900" />
 
+    <!-- FAB para exportar CSV -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/exportCsvFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="96dp"
+        android:src="@android:drawable/stat_sys_download"
+        app:backgroundTint="@color/neutral_700"
+        app:tint="@color/amber_400"
+        app:fabSize="mini" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
